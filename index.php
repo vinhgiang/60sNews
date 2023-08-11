@@ -1,11 +1,16 @@
 <?php
+
+use App\Utils\Logger;
+
+require __DIR__ . '/vendor/autoload.php';
+
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 
 $startTime = '06:30:00';
 $endTime   = '07:00:00';
 $now       = date('H:i:s');
-if($now < $startTime || $now > $endTime) {
+if ($now < $startTime || $now > $endTime) {
 //    http_response_code(400);
     die("The job will be started from $startTime to $endTime. Now is $now.");
 }
@@ -18,6 +23,8 @@ $token       = 'token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682';
 $playListUrl = "{$resourcePath}index.m3u8?{$token}";
 
 $playList = explode("\n", file_get_contents($playListUrl));
+
+$playList = [];
 
 /**
  * StreamingInstruction example
@@ -87,9 +94,13 @@ for ($i = 5; $i < count($playList); $i++) {
 }
 
 if (!isset($newLastId)) {
-    logMsg('No new ID produced.');
-    logMsg('Playlist:');
-    logMsg(print_r($playList, true));
+    $logger = new Logger();
+
+    $logger->log('No new ID produced.');
+    $logger->log('Playlist:');
+    $logger->log(print_r($playList, true));
+
+    http_response_code(400);
     exit;
 }
 
@@ -99,14 +110,3 @@ file_put_contents('last-id.txt', $lastId);
 file_put_contents('whole.ts', join('', $streamingData), FILE_APPEND);
 
 die('DONE');
-
-function logMsg ($msg)
-{
-    $logFileName = 'error.log';
-    $msg = '[' . Date('Y-m-d H:i:s') . "] $msg \n";
-
-    $existingLog = file_get_contents($logFileName);
-    $existingLog = $existingLog !== false ? $existingLog : '';
-
-    file_put_contents($logFileName, $existingLog . $msg);
-}
