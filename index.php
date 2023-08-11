@@ -3,9 +3,7 @@
 use App\Utils\Logger;
 
 require __DIR__ . '/vendor/autoload.php';
-
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
+require __DIR__ . '/configs.php';
 
 $startTime = '06:30:00';
 $endTime   = '07:00:00';
