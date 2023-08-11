@@ -10,13 +10,13 @@ $endTime   = '07:00:00';
 $now       = date('H:i:s');
 if ($now < $startTime || $now > $endTime) {
 //    http_response_code(400);
-    die("The job will be started from $startTime to $endTime. Now is $now.");
+//    die("The job will be started from $startTime to $endTime. Now is $now.");
 }
 
-$resourcePath = 'http://171.232.93.6:8080/sctv/s10/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
+$resourcePath = $_ENV['RESOURCE_PATH'];
 
 // the token is optional during this examination
-$token       = 'token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682';
+$token       = 'token=' . $_ENV['TOKEN'];
 $playListUrl = "{$resourcePath}index.m3u8?{$token}";
 
 $playList = explode("\n", file_get_contents($playListUrl));
