@@ -2,15 +2,16 @@
 
 use App\Utils\Logger;
 
-require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/configs.php';
 
-$startTime = '06:30:00';
-$endTime   = '07:00:00';
+$startTime  = '06:31:00';
+$endTime    = '07:02:00';
+$startTime2  = '18:31:00';
+$endTime2    = '19:02:00';
 $now       = date('H:i:s');
-if ($now < $startTime || $now > $endTime) {
+if (($now < $startTime || $now > $endTime) && ($now < $startTime2 || $now > $endTime2)) {
 //    http_response_code(400);
-//    die("The job will be started from $startTime to $endTime. Now is $now.");
+    die("The job will be started from $startTime to $endTime. Now is $now.");
 }
 
 $resourcePath = $_ENV['RESOURCE_PATH'];
