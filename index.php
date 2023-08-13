@@ -2,7 +2,7 @@
 
 use App\Utils\Logger;
 
-require __DIR__ . '/configs.php';
+require __DIR__ . '/App/Configs/configs.php';
 
 $startTime  = '06:31:00';
 $endTime    = '07:02:00';

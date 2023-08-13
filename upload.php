@@ -2,7 +2,7 @@
 
 use App\YoutubeService;
 
-require __DIR__ . '/configs.php';
+require __DIR__ . '/App/Configs/configs.php';
 
 $oauthId      = $_ENV['GOOGLE_OAUTH_ID'];
 $oauthSecret  = $_ENV['GOOGLE_OAUTH_SECRET'];
