@@ -6,9 +6,9 @@ require __DIR__ . '/configs.php';
 
 $startTime  = '06:31:00';
 $endTime    = '07:02:00';
-$startTime2  = '18:31:00';
-$endTime2    = '19:02:00';
-$now       = date('H:i:s');
+$startTime2 = '18:31:00';
+$endTime2   = '19:02:00';
+$now        = date('H:i:s');
 if (($now < $startTime || $now > $endTime) && ($now < $startTime2 || $now > $endTime2)) {
 //    http_response_code(400);
     die("The job will be started from $startTime to $endTime. Now is $now.");
@@ -100,9 +100,9 @@ if (!isset($newLastId)) {
     exit;
 }
 
-$lastId = $newLastId;
+$lastId    = $newLastId;
+$videoName = 'video/' . date('ymd-a') . '.ts';
+file_put_contents('log/last-id.txt', $lastId);
+file_put_contents($videoName, join('', $streamingData), FILE_APPEND);
 
-file_put_contents('last-id.txt', $lastId);
-file_put_contents('whole.ts', join('', $streamingData), FILE_APPEND);
-
-die('DONE');
+die($videoName);

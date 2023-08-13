@@ -198,9 +198,14 @@ class YoutubeService
         return $videoStatus['id'];
     }
 
+    /**
+     * @param string $videoId
+     * @param string $thumbPath
+     * @return void
+     */
     public function setVideoThumbnail($videoId, $thumbPath)
     {
-        // This only work after account verification or app verification. TOBE verified
+        // This only work after account verification or app verification.
         // https://www.youtube.com/verify
         $this->youtube->thumbnails->set(
             $videoId,

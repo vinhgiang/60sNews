@@ -1,4 +1,6 @@
 .idea
 /vendor/
+video
 .env
-last-id.txt
+log/last-id.txt
+log/*
