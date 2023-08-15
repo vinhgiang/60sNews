@@ -76,7 +76,7 @@ $playList = explode("\n", file_get_contents($playListUrl));
 
 // the real streaming start at element #5
 $streamingData = [];
-$lastId        = file_get_contents('last-id.txt');
+$lastId        = file_exists('log/last-id.txt') ? file_get_contents('log/last-id.txt') : '';
 for ($i = 5; $i < count($playList); $i++) {
     if ($i % 2 != 0) {
         preg_match('/(\d+)[.]ts/', $playList[$i], $matches);
@@ -101,8 +101,8 @@ if (!isset($newLastId)) {
 }
 
 $lastId    = $newLastId;
-$videoName = 'video/' . date('ymd-a') . '.ts';
+$videoPath = 'video/' . date('ymd-a') . '.ts';
 file_put_contents('log/last-id.txt', $lastId);
-file_put_contents($videoName, join('', $streamingData), FILE_APPEND);
+file_put_contents($videoPath, join('', $streamingData), FILE_APPEND);
 
-die($videoName);
+die($videoPath);

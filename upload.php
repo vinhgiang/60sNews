@@ -1,13 +1,20 @@
 <?php
 
-use App\YoutubeService;
+use App\Services\YoutubeService;
 
 require __DIR__ . '/App/Configs/configs.php';
+
+$videoPath = 'video/' . date('ymd-a') . '.ts';
+if (! file_exists($videoPath)) {
+    die('No file is needed to be uploaded.');
+}
 
 $oauthId      = $_ENV['GOOGLE_OAUTH_ID'];
 $oauthSecret  = $_ENV['GOOGLE_OAUTH_SECRET'];
 $redirectUrl  = $_ENV['GOOGLE_OAUTH_REDIRECT_URL'];
 $refreshToken = $_ENV['GOOGLE_OAUTH_REFRESH_TOKEN'];
+$date         = date('H:i:s');
+$dayPart      = date('a') == 'am' ? 'Sáng' : 'Chiều';
 
 $youtubeService = new YoutubeService($oauthId, $oauthSecret, $redirectUrl);
 try {
@@ -15,8 +22,8 @@ try {
     // Have to set Defer because we need to combine/create other requests before executing it at once
     $youtubeService->setDefer();
 
-    $title       = '60 Giây Chiều Ngày 12/08/2023 - Mới Hơn - HTV Tin Tức Mới Nhất Hơn';
-    $description = "Tin Tức HTV Chiều 12/08/2023\n60 Giây Chiều Mới Hơn Nhất - Ngày 12/08/2023 - HTV Tin Tức Mới Nhất Hơn\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác";
+    $title       = "60 Giây $dayPart Ngày $date - Mới Hơn - HTV Tin Tức Mới Nhất Hơn";
+    $description = "Tin Tức HTV $dayPart $date\n60 Giây $dayPart Mới Hơn Nhất - Ngày $date - HTV Tin Tức Mới Nhất Hơn\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác";
     $tags        = [
         "#TinTucThoiSuVietnam",
         "#HTVTinTuc",
@@ -35,8 +42,9 @@ try {
     // reliable connection as fewer chunks lead to faster uploads. Set a lower
     // value for better recovery on less reliable connections.
     $chunkSizeBytes = 60 * 1024 * 1024; // 60Mb
-//    $videoId = $youtubeService->uploadVideo("test.ts", $snippet, 'private', false, $chunkSizeBytes);
-//    $youtubeService->setVideoThumbnail('84ynjCwjPBE', 'thumb.jpg');
+    $videoId = $youtubeService->uploadVideo($videoPath, $snippet, 'private', false, $chunkSizeBytes);
+
+    //    $youtubeService->setVideoThumbnail('84ynjCwjPBE', 'thumb.jpg');
 
 } catch (Google_Service_Exception $e) {
     print_r("A service error occurred: \n");
