@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\YoutubeService;
+use App\Services\Youtube\YoutubeService;
 
 require __DIR__ . '/App/Configs/configs.php';
 
@@ -13,7 +13,7 @@ $oauthId      = $_ENV['GOOGLE_OAUTH_ID'];
 $oauthSecret  = $_ENV['GOOGLE_OAUTH_SECRET'];
 $redirectUrl  = $_ENV['GOOGLE_OAUTH_REDIRECT_URL'];
 $refreshToken = $_ENV['GOOGLE_OAUTH_REFRESH_TOKEN'];
-$date         = date('H:i:s');
+$date         = date('d/m/Y');
 $dayPart      = date('a') == 'am' ? 'Sáng' : 'Chiều';
 
 $youtubeService = new YoutubeService($oauthId, $oauthSecret, $redirectUrl);

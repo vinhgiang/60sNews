@@ -4,20 +4,20 @@ namespace App\Utils;
 class Logger
 {
     /** @var string */
-    private $filePath = '';
+    private static $filePath = 'log/info.log';
 
-    public function __construct($filePath = 'log/info.log')
+    public function __construct($filePath)
     {
-        $this->filePath = $filePath;
+        self::$filePath = $filePath;
     }
 
-    public function log($msg)
+    public static function log($msg)
     {
         $msg = '[' . Date('Y-m-d H:i:s') . "] $msg \n";
 
-        $existingLog = file_get_contents($this->filePath);
+        $existingLog = file_get_contents(self::$filePath);
         $existingLog = $existingLog !== false ? $existingLog : '';
 
-        file_put_contents($this->filePath, $existingLog . $msg);
+        file_put_contents(self::$filePath, $existingLog . $msg);
     }
 }

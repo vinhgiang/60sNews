@@ -1,0 +1,50 @@
+### StreamingInstruction example
+```
+[
+    '#EXTM3U',
+    '#EXT-X-VERSION:3',
+    '#EXT-X-MEDIA-SEQUENCE:1102063',
+    '#EXT-X-TARGETDURATION:3',
+    '#EXTINF:3.000,',
+    '1691696149512.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682',
+    '#EXTINF:3.000,',
+    '1691696152619.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682',
+    '#EXTINF:3.000,',
+    '1691696155721.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682',
+    '#EXTINF:3.000,'
+    '1691696158825.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696161416.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696164526.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696167634.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696170735.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696173837.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696176428.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696179540.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696182643.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696185748.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696188851.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696191446.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696194550.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696197658.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696200759.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696203351.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '#EXTINF:3.000,'
+    '1691696206456.ts?token=epGJ0I_QNuDvH0vqMePrRw&e=1691633682'
+    '',
+]
+```

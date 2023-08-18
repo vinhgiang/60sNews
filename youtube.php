@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\YoutubeService;
+use App\Services\Youtube\YoutubeService;
 
 require __DIR__ . '/App/Configs/configs.php';
 
