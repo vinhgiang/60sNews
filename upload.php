@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\Youtube\YoutubeService;
+use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
@@ -47,11 +48,9 @@ try {
     //    $youtubeService->setVideoThumbnail('84ynjCwjPBE', 'thumb.jpg');
 
 } catch (Google_Service_Exception $e) {
-    print_r("A service error occurred: \n");
-    print_r($e->getMessage());
+    Logger::log("A service error occurred: \n{$e->getMessage()}");
 } catch (Google_Exception $e) {
-    print_r("An client error occurred: \n");
-    print_r($e->getMessage());
+    Logger::log("An client error occurred: \n{$e->getMessage()}");
 } catch (Exception $e) {
-    print_r($e->getMessage());
+    Logger::log("Generic error: \n{$e->getMessage()}");
 }
