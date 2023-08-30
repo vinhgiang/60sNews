@@ -1,6 +1,8 @@
 .idea
 /vendor/
-video
+video/*
+!video/frames
+video/frames/*
 .env
 log/last-id.txt
 log/*
