@@ -18,7 +18,7 @@ class Htv7 extends StreamingProvider
     }
 
     /**
-     * @return void
+     * @return string
      * @throws Exception
      */
     public function fetchServerIp()
@@ -41,6 +41,8 @@ class Htv7 extends StreamingProvider
         }
 
         $this->saveIp($ips);
+
+        return count($ips) . " IPs has been saved.";
     }
 
     /**

@@ -7,8 +7,8 @@ use App\Services\StreamingProviders\StreamingProviderService;
 require __DIR__ . '/App/Configs/configs.php';
 
 $moments = [
-    ['06:09:00', '06:12:00'],
-    ['06:19:00', '06:20:00']
+    ['06:30:00', '07:01:00'],
+    ['18:30:00', '19:01:00']
 ];
 
 /** @var Htv7 $streamingProvider */
