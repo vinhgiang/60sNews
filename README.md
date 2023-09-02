@@ -102,3 +102,5 @@ ffmpeg -i '{video_absolute_path}' -filter_complex '
 [0v][0a][1v][1a][2v][2a]concat=n=3:v=1:a=1[outv][outa]' -map '[outv]' -map '[outa]' '{export_directory_absolute_path}/out.mp4'
 ```
 **NOTE:** the output file here is .mp4 otherwise it will be low res
+
+test runcloud deployment
