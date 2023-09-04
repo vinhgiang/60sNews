@@ -13,11 +13,11 @@ class Logger
 
     public static function log($msg)
     {
-        $msg = '[' . Date('Y-m-d H:i:s') . "] $msg \n";
+        $msg = '[' . Date('Y-m-d H:i:s') . ']' . print_r($msg, true) . "\n";
 
         $existingLog = file_get_contents(self::$filePath);
         $existingLog = $existingLog !== false ? $existingLog : '';
 
-        file_put_contents(self::$filePath, $existingLog . $msg);
+        file_put_contents(self::$filePath, $msg . $existingLog);
     }
 }
