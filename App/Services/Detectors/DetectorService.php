@@ -2,7 +2,6 @@
 
 namespace App\Services\Detectors;
 
-use App\Utils\Logger;
 use Exception;
 use SapientPro\ImageComparator\ImageComparator;
 use SapientPro\ImageComparator\ImageResourceException;
@@ -41,10 +40,14 @@ class DetectorService
      */
     public function scan($totalFrames, $frameDir, $sensitive = 95, $foundOffset = 10)
     {
-        $isStart = true;
-        $times   = [];
-        $index   = 0;
-        for ($i = 1; $i < $totalFrames; $i++) {
+        return $this->scanBundle($totalFrames, $frameDir, 1, true, [], $sensitive, $foundOffset);
+    }
+
+    public function scanBundle($totalFrames, $frameDir, $startAt = 1, $isStart = true, $previousResult = [], $sensitive = 95, $foundOffset = 10)
+    {
+        $times = $previousResult;
+        $index = 0;
+        for ($i = $startAt; $i <= $totalFrames; $i++) {
             $frame        = "$frameDir/$i.jpg";
             $similarities = [];
 
@@ -67,9 +70,17 @@ class DetectorService
                 $isStart = !$isStart;
                 $i       += $foundOffset;
             }
-        }
 
-        Logger::log($times);
+            if ($i % 100 == 0 || $i == $totalFrames) {
+                $data = [
+                    'processed' => $i,
+                    'isStart'   => $isStart,
+                    'result'    => $times,
+                    'isDone'    => $i == $totalFrames
+                ];
+                file_put_contents('log/scan-boundary.txt', json_encode($data));
+            }
+        }
 
         return $times;
     }

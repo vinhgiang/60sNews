@@ -15,4 +15,4 @@ $fps       = 10;
 $ffmpegService = new FfmpegService($video);
 $ffmpegService->extractAllFrames(10);
 
-die('took' . time() - $startTime . ' seconds.');
+die('took ' . time() - $startTime . ' seconds.');
