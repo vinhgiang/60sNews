@@ -84,7 +84,6 @@ class FfmpegService
     public function trimVideo($times, $newFilename = '', $fps = 10)
     {
         $newFilename   = empty($newFilename) ? "$this->fileName-trimmed" : $newFilename;
-        $times[]       = [0, 0];
         Logger::log($times);
 
         $cutterCommand = $this->trimVideoCommandBuilder($times, $newFilename, $fps);
@@ -108,11 +107,8 @@ class FfmpegService
         $index = 0;
         $start = 0;
         foreach ($times as [$startFrame, $endFrame]) {
-            // in case that there is no end frame, we will use the start frame
-            $endFrame = $endFrame ?? $startFrame;
-
             $startFrame /= $fps;
-            $isLast     = $index == $numAds - 1;
+            $isLast     = $index == $numAds;
             $endFilter  = $isLast ? '' : ":end=$startFrame";
 
             $filterCommand .= "[0:v]trim=start={$start}{$endFilter},setpts=PTS-STARTPTS,format=yuv420p[{$index}v];";

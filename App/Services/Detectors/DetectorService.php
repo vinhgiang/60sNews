@@ -1,28 +1,34 @@
 <?php
 
-namespace App\Services\AdsDetector;
+namespace App\Services\Detectors;
 
+use App\Utils\Logger;
 use Exception;
 use SapientPro\ImageComparator\ImageComparator;
 use SapientPro\ImageComparator\ImageResourceException;
 
-class AdsDetectorService
+class DetectorService
 {
     /** @var ImageComparator */
     private $imageComparator;
 
     /** @var string[] */
-    private $adsStartIndicators;
+    private $startIndicators;
 
     /** @var string[] */
-    private $adsEndIndicators;
+    private $endIndicators;
 
-    public function __construct()
+    /**
+     * @param string $startIndicatorsDir
+     * @param string $endIndicatorsDir
+     * @throws Exception
+     */
+    public function __construct($startIndicatorsDir, $endIndicatorsDir)
     {
         // TODO: dependency injection
         $this->imageComparator = new ImageComparator();
 
-        $this->initAdsIndicator();
+        $this->initIndicator($startIndicatorsDir, $endIndicatorsDir);
     }
 
     /**
@@ -43,12 +49,12 @@ class AdsDetectorService
             $similarities = [];
 
             if ($isStart) {
-                foreach ($this->adsStartIndicators as $indicator) {
+                foreach ($this->startIndicators as $indicator) {
                     $similarities[] = $this->imageComparator->compare($indicator, $frame);
                 }
             }
             else {
-                foreach ($this->adsEndIndicators as $indicator) {
+                foreach ($this->endIndicators as $indicator) {
                     $similarities[] = $this->imageComparator->compare($indicator, $frame);
                 }
             }
@@ -63,28 +69,30 @@ class AdsDetectorService
             }
         }
 
+        Logger::log($times);
+
         return $times;
     }
 
+
     /**
+     * @param string $startIndicatorsDir
+     * @param string $endIndicatorsDir
      * @return void
      * @throws Exception
      */
-    protected function initAdsIndicator()
+    private function initIndicator($startIndicatorsDir, $endIndicatorsDir)
     {
-        $adsStartIndicatorsDir = 'resources/ads/start';
-        $adsEndIndicatorsDir   = 'resources/ads/end';
-
-        if (! is_dir($adsStartIndicatorsDir) || ! is_dir($adsEndIndicatorsDir)){
-            throw new Exception('Ads start indicator or end indicator are not exist in resources/ads/start or resources/ads/end.');
+        if (! is_dir($startIndicatorsDir) || ! is_dir($endIndicatorsDir)){
+            throw new Exception("start indicator or end indicator are not exist in $startIndicatorsDir or $endIndicatorsDir.");
         }
 
-        $this->adsStartIndicators = array_map(function ($i) use ($adsStartIndicatorsDir) {
-            return "$adsStartIndicatorsDir/$i";
-        }, array_values(array_diff(scandir($adsStartIndicatorsDir), ['.', '..'])));
+        $this->startIndicators = array_map(function ($i) use ($startIndicatorsDir) {
+            return "$startIndicatorsDir/$i";
+        }, array_values(array_diff(scandir($startIndicatorsDir), ['.', '..'])));
 
-        $this->adsEndIndicators   = array_map(function ($i) use ($adsEndIndicatorsDir) {
-            return "$adsEndIndicatorsDir/$i";
-        }, array_values(array_diff(scandir($adsEndIndicatorsDir), ['.', '..'])));
+        $this->endIndicators = array_map(function ($i) use ($endIndicatorsDir) {
+            return "$endIndicatorsDir/$i";
+        }, array_values(array_diff(scandir($endIndicatorsDir), ['.', '..'])));
     }
 }
