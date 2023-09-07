@@ -13,5 +13,5 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
 if ($_ENV['ENV'] == 'local') {
-    set_time_limit(600);
+    set_time_limit(60);
 }
