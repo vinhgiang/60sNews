@@ -6,11 +6,10 @@ use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-set_time_limit(540);
-
-$video = 'video/' . date('ymd-a') . '.ts';
-if (! file_exists($video)) {
-    die('No file is needed to be uploaded.');
+$filename = date('ymd-a');
+$video    = 'video/' . $filename . '.ts';
+if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4')) {
+    die('No file is needed to be trimmed.');
 }
 
 $fps = 10;
