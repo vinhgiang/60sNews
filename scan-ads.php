@@ -20,7 +20,7 @@ $totalFrames   = ceil($ffmpegService->getVideoDuration() * $fps);
 $frameDir = $ffmpegService->getFramesDir();
 
 try {
-    $preDataFile = "scan-boundary.txt";
+    $preDataFile = 'scan-ads.txt';
     $data        = json_decode(file_get_contents("log/$preDataFile"));
 
     $startAt = $data->processed ?? 1;
@@ -29,17 +29,13 @@ try {
     $isDone  = $data->isDone ?? false;
 
     if (! $isDone) {
-        $borderStartIndicatorsDir = 'resources/border/start';
-        $borderEndIndicatorsDir   = 'resources/border/end';
-        $borderDetectorService    = new DetectorService($borderStartIndicatorsDir, $borderEndIndicatorsDir);
-        $borderTimesDetected      = $borderDetectorService->scanBundle($totalFrames, $frameDir, $startAt, $isStart, $result, 95, 10, $preDataFile);
+        $adsStartIndicatorsDir = 'resources/ads/start';
+        $adsEndIndicatorsDir   = 'resources/ads/end';
+        $adsDetectorService    = new DetectorService($adsStartIndicatorsDir, $adsEndIndicatorsDir);
+        $adsTimesDetected      = $adsDetectorService->scanBundle($totalFrames, $frameDir, $startAt, $isStart, $result, 95, 10, $preDataFile);
 
-        if (count($borderTimesDetected) == 0) {
-            throw new Exception('could not detect border. Empty array.');
-        }
-
-        Logger::log("Boundary: ");
-        Logger::log($borderTimesDetected);
+        Logger::log("Ads: ");
+        Logger::log($adsTimesDetected);
     }
 
 } catch (Exception $e) {

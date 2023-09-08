@@ -1,8 +1,6 @@
 <?php
 
-use App\Services\Detectors\DetectorService;
 use App\Services\Ffmpeg\FfmpegService;
-use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
@@ -12,56 +10,37 @@ if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4'))
     die('No file is needed to be trimmed.');
 }
 
-$fps = 10;
-
 $ffmpegService = new FfmpegService($video);
-$ffmpegService->extractAllFrames(10);
 
-$totalFrames = ceil($ffmpegService->getVideoDuration() * $fps);
+$boundaryScanner = json_decode(file_get_contents("log/scan-boundary.txt"));
+if (! $boundaryScanner->isDone) {
+    die('Have not finished scanning boundary.');
+}
 
-$frameDir = $ffmpegService->getFramesDir();
+$borderTimesDetected = $boundaryScanner->result;
+$times[] = [0, $borderTimesDetected[0][0]];
 
-try {
-    $borderStartIndicatorsDir = 'resources/border/start';
-    $borderEndIndicatorsDir   = 'resources/border/end';
-    $borderDetectorService    = new DetectorService($borderStartIndicatorsDir, $borderEndIndicatorsDir);
-    $borderTimesDetected      = $borderDetectorService->scan($totalFrames, $frameDir);
+// if there is no end border indicator
+$borderTimesDetected[0][1] = $borderTimesDetected[0][1] ?? $boundaryScanner->processed;
 
-    if (count($borderTimesDetected) == 0) {
-        throw new Exception('could not detect border. Empty array.');
-    }
+$adsScanner = json_decode(file_get_contents("log/scan-ads.txt"));
+if (! $adsScanner->isDone) {
+    die('Have not finished scanning ads.');
+}
 
-    // if there is no end border indicator
-    $borderTimesDetected[0][1] = $borderTimesDetected[0][1] ?? $totalFrames;
+$adsTimesDetected = $adsScanner->result;
+$times = array_merge($times, $adsTimesDetected);
 
-    $times[] = [0, $borderTimesDetected[0][0]];
-
-    $adsStartIndicatorsDir = 'resources/ads/start';
-    $adsEndIndicatorsDir   = 'resources/ads/end';
-    $adsDetectorService    = new DetectorService($adsStartIndicatorsDir, $adsEndIndicatorsDir);
-    $adsTimesDetected      = $adsDetectorService->scan($totalFrames, $frameDir);
-
-    // filter out parts that beyonds borders
-    $adsTimesDetected = array_filter($adsTimesDetected, function ($moment) use ($borderTimesDetected) {
-        return $moment[0] > $borderTimesDetected[0][0] && $moment[0] < $borderTimesDetected[0][1];
-    });
-
-    $times = array_merge($times, $adsTimesDetected);
-
-    $lastOccasion = end($times);
-    // has a pair
-    if (count($lastOccasion) == 2) {
-        $times[] = [$borderTimesDetected[0][1], $borderTimesDetected[0][1]];
-    }
-    // missing one indicator
-    else {
-        $times[count($times) - 1][0] = $borderTimesDetected[0][1];
-    }
-
-} catch (Exception $e) {
-    Logger::log($e->getMessage());
+$lastOccasion = end($times);
+// has a pair
+if (count($lastOccasion) == 2) {
+    $times[] = [$borderTimesDetected[0][1], $borderTimesDetected[0][1]];
+}
+// missing one indicator
+else {
+    $times[count($times) - 1][0] = $borderTimesDetected[0][1];
 }
 
 $ffmpegService->trimVideo($times);
 
-$ffmpegService->cleanup();
+//$ffmpegService->cleanup();
