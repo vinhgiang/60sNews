@@ -4,7 +4,7 @@ use App\Services\Ffmpeg\FfmpegService;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-set_time_limit(60 * 5);
+set_time_limit(600);
 
 $filename = date('ymd-a');
 $video    = 'video/' . $filename . '.ts';
