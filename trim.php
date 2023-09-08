@@ -4,10 +4,12 @@ use App\Services\Ffmpeg\FfmpegService;
 
 require __DIR__ . '/App/Configs/configs.php';
 
+set_time_limit(60 * 5);
+
 $filename = date('ymd-a');
 $video    = 'video/' . $filename . '.ts';
 if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4')) {
-    die('No file is needed to be trimmed.');
+    die("No file is needed to be trimmed at $video");
 }
 
 $ffmpegService = new FfmpegService($video);
