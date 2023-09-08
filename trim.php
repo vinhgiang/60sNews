@@ -4,8 +4,6 @@ use App\Services\Ffmpeg\FfmpegService;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-set_time_limit(600);
-
 $filename = date('ymd-a');
 $video    = 'video/' . $filename . '.ts';
 if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4')) {
