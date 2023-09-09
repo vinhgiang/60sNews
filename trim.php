@@ -29,6 +29,12 @@ if (! $adsScanner->isDone) {
 }
 
 $adsTimesDetected = $adsScanner->result;
+
+// filter out parts that beyonds borders
+$adsTimesDetected = array_filter($adsTimesDetected, function ($moment) use ($borderTimesDetected) {
+    return $moment[0] > $borderTimesDetected[0][0] && $moment[0] < $borderTimesDetected[0][1];
+});
+
 $times = array_merge($times, $adsTimesDetected);
 
 $lastOccasion = end($times);
