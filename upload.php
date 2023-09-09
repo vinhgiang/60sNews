@@ -5,7 +5,7 @@ use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$videoPath = 'video/' . date('ymd-a') . '.ts';
+$videoPath = 'video/' . date('ymd-a') . '-trimmed.mp4';
 if (! file_exists($videoPath)) {
     die('No file is needed to be uploaded.');
 }

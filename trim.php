@@ -10,6 +10,8 @@ if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4'))
     die("No file is needed to be trimmed at $video");
 }
 
+$startTime = time();
+
 $ffmpegService = new FfmpegService($video);
 
 $boundaryScanner = json_decode(file_get_contents("log/scan-boundary.txt"));
@@ -50,3 +52,5 @@ else {
 $ffmpegService->trimVideo($times);
 
 $ffmpegService->cleanup();
+
+die('took ' . time() - $startTime . ' seconds.');

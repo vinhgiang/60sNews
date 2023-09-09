@@ -45,3 +45,5 @@ try {
 } catch (Exception $e) {
     Logger::log($e->getMessage());
 }
+
+die('took ' . time() - $startTime . ' seconds.');
