@@ -73,6 +73,8 @@ class FfmpegService
     public function cleanup()
     {
         FileSystem::rmdir_recursive($this->getFramesDir());
+        file_put_contents('log/scan-boundary.txt', '');
+        file_put_contents('log/scan-ads.txt', '');
     }
 
     /**

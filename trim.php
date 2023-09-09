@@ -49,4 +49,4 @@ else {
 
 $ffmpegService->trimVideo($times);
 
-//$ffmpegService->cleanup();
+$ffmpegService->cleanup();
