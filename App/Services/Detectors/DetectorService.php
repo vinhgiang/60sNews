@@ -79,16 +79,17 @@ class DetectorService
                     $index++;
                 }
                 $isStart = !$isStart;
-                $i       += $foundOffset;
+                $i       = min($i + $foundOffset, $totalFrames);
             }
 
             if (! empty($logResulFilename)) {
-                if ($i % 100 == 0 || $i == $totalFrames) {
+                $isDone = $i == $totalFrames || count($times) == 2;
+                if ($i % 100 == 0 || $isDone) {
                     $data = [
                         'processed' => $i,
                         'isStart'   => $isStart,
                         'result'    => $times,
-                        'isDone'    => $i == $totalFrames
+                        'isDone'    => $isDone
                     ];
                     file_put_contents("log/$logResulFilename", json_encode($data));
                 }

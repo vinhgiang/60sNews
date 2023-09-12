@@ -32,7 +32,8 @@ try {
         $borderStartIndicatorsDir = 'resources/border/start';
         $borderEndIndicatorsDir   = 'resources/border/end';
         $borderDetectorService    = new DetectorService($borderStartIndicatorsDir, $borderEndIndicatorsDir);
-        $borderTimesDetected      = $borderDetectorService->scanBundle($totalFrames, $frameDir, $startAt, $isStart, $result, 95, 10, $preDataFile);
+        // since I know that the program will last for about 30 minitest, we can skip the middle part by setting the foundOffset to 25 minutest (25 * 60 * $fps)
+        $borderTimesDetected      = $borderDetectorService->scanBundle($totalFrames, $frameDir, $startAt, $isStart, $result, 95, (25 * 60 * $fps), $preDataFile);
 
         if (count($borderTimesDetected) == 0) {
             throw new Exception('could not detect border. Empty array.');
