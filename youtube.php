@@ -25,11 +25,23 @@ $youtubeService = new YoutubeService($oauthId, $oauthSecret, $redirectUrl);
 <?php
     else:
         $youtubeService->fetchAccessTokenWithAuthCode($_GET['code']);
+        $token = $youtubeService->getRefreshToken();
 ?>
         <h3>Refresh Token:</h3>
 
-    <p><?= $youtubeService->getRefreshToken() ?><p>
-    <p>Insert this token in .env file with the key {GOOGLE_OAUTH_REFRESH_TOKEN}</p>
+    <p><?= $token ?><p>
+    <?php
+        if (is_writable(__DIR__ . '/.env')) :
+            putenv('GOOGLE_OAUTH_REFRESH_TOKEN=' . $token);
+    ?>
+            <p>Your Youtube OAuth token has been saved to .env file.</p>
+    <?php
+        else:
+    ?>
+            <p>Insert this token in .env file with the key {GOOGLE_OAUTH_REFRESH_TOKEN}</p>
+    <?php
+        endif;
+    ?>
 <?php endif ?>
 </body>
 </html>
