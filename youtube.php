@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\Youtube\YoutubeService;
+use App\Utils\MyEnv;
 
 require __DIR__ . '/App/Configs/configs.php';
 
@@ -32,7 +33,9 @@ $youtubeService = new YoutubeService($oauthId, $oauthSecret, $redirectUrl);
     <p><?= $token ?><p>
     <?php
         if (is_writable(__DIR__ . '/.env')) :
-            putenv('GOOGLE_OAUTH_REFRESH_TOKEN=' . $token);
+            MyEnv::updateEnvFile([
+                'GOOGLE_OAUTH_REFRESH_TOKEN' => $token
+            ]);
     ?>
             <p>Your Youtube OAuth token has been saved to .env file.</p>
     <?php
