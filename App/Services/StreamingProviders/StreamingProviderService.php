@@ -3,6 +3,7 @@
 namespace App\Services\StreamingProviders;
 
 use App\Services\StreamingProviders\Domain\StreamingProvider;
+use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
 use Exception;
 
 class StreamingProviderService
@@ -64,6 +65,8 @@ class StreamingProviderService
         foreach ($moments as [$start, $end]) {
             try {
                 $videoPath = $this->record($start, $end, $fileName, $path);
+            } catch (EmptyIpListException $e) {
+                throw $e;
             } catch (Exception $ignored) {
                 // ignore the exception since we will evaluate multiple moments
             }

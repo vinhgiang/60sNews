@@ -2,6 +2,7 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
+use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
 use App\Utils\Logger;
 use Exception;
 
@@ -18,7 +19,7 @@ class Htv7 extends StreamingProvider
     }
 
     /**
-     * @return string
+     * @return int
      * @throws Exception
      */
     public function fetchServerIp()
@@ -33,16 +34,18 @@ class Htv7 extends StreamingProvider
                 continue;
             }
             preg_match('/http[s]?:\/\/([\d*[.]*]*:\d*)/', $providerUrl, $matches);
-            $ips[$matches[1]] = '';
+            if (! empty($matches[1])) {
+                $ips[$matches[1]] = '';
+            }
         }
 
         if (empty($ips)) {
-            throw new Exception("Could not get server Ip list at $providerUrl");
+            throw new EmptyIpListException("Could not get server Ip list at $url");
         }
 
         $this->saveIp($ips);
 
-        return count($ips) . " IPs has been saved.";
+        return count($ips);
     }
 
     /**
@@ -123,7 +126,8 @@ class Htv7 extends StreamingProvider
     {
         $ipLength = count(self::$ips);
         if ($ipLength == 0) {
-            throw new Exception('HTV7 IP list is empty');
+            Logger::log('HTV7 IP list is empty. Getting the new list');
+            $ipLength = $this->fetchServerIp();
         }
 
         return rand(0, $ipLength - 1);
