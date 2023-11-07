@@ -4,7 +4,8 @@ use App\Services\Ffmpeg\FfmpegService;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$video    = 'video/' . date('ymd-a') . '.ts';
+$fileName = '60s-' . date('a') == 'am' ? 'sang-06:30:00' : 'chieu-18:30:00' . '.ts';
+$video    = "video/$fileName";
 if (! file_exists($video)) {
     die("No file is needed to be extracted at $video");
 }
