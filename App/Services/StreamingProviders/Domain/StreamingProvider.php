@@ -37,6 +37,8 @@ abstract class StreamingProvider
      */
     public abstract function getStreamingPlaylist();
 
+    public abstract function getLastIdPath();
+
     /**
      * @param string[] $streamingPlaylist
      * @return bool

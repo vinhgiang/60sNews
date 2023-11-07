@@ -4,5 +4,5 @@ video/*
 !video/frames
 video/frames/*
 .env
-log/last-id.txt
+data/*
 log/*

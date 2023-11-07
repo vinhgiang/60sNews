@@ -29,7 +29,7 @@ class StreamingProviderService
      */
     public function record($from, $to, $fileName = '', $path = 'video')
     {
-        $lastIdPath = 'log/last-id.txt';
+        $lastIdPath = $this->streamingProvider->getLastIdPath();
         $now        = date('H:i:s');
 
         if ($now < $from || $now > $to) {
@@ -50,25 +50,25 @@ class StreamingProviderService
 
     /**
      * @param array[] $moments
-     * @param string $fileName
      * @param string $path
      * @return string
      * @throws Exception
      */
-    public function recordMoments($moments, $fileName = '', $path = 'video')
+    public function recordMoments($moments, $path = 'video')
     {
         if (!is_array($moments)) {
             throw new Exception("Moments need to be an array. For example: [['06:00:00', '07:00:00'], ['13:30:00', '13:45:00']]");
         }
 
         $videoPath = '';
-        foreach ($moments as [$start, $end]) {
+        foreach ($moments as $programName => [$start, $end]) {
             try {
-                $videoPath = $this->record($start, $end, $fileName, $path);
+                $videoPath = $this->record($start, $end, $programName . '-' . str_replace(':', '-', $start), $path);
             } catch (EmptyIpListException $e) {
                 throw $e;
             } catch (Exception $ignored) {
                 // ignore the exception since we will evaluate multiple moments
+                print_r($ignored->getMessage());
             }
 
             // stop the process as soon as we captured the correct moment

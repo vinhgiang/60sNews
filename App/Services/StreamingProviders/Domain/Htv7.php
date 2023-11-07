@@ -15,7 +15,12 @@ class Htv7 extends StreamingProvider
     {
         parent::__construct();
 
-        self::$ips = explode("\n", file_get_contents('log/ip.txt'));
+        self::$ips = explode("\n", file_get_contents('data/htv7-ip.txt'));
+    }
+
+    public function getLastIdPath()
+    {
+        return 'data/htv7-last-id.txt';
     }
 
     /**
@@ -149,6 +154,6 @@ class Htv7 extends StreamingProvider
      */
     private function saveIp($ips)
     {
-        file_put_contents('log/ip.txt', join("\n", array_keys($ips)));
+        file_put_contents('data/htv7-ip.txt', join("\n", array_keys($ips)));
     }
 }

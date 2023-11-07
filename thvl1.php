@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\StreamingProviders\Domain\Htv7;
+use App\Services\StreamingProviders\Domain\Thvl1;
 use App\Services\StreamingProviders\StreamingProviderFactory;
 use App\Services\StreamingProviders\StreamingProviderService;
 use App\Utils\Logger;
@@ -8,13 +8,13 @@ use App\Utils\Logger;
 require __DIR__ . '/App/Configs/configs.php';
 
 $moments = [
-    '60s-sang' => ['06:30:00', '07:03:00'],
-    '60s-chieu' => ['18:30:00', '19:03:00']
+    'chao-buoi-sang' => ['05:58:00', '06:30:00'],
+    'nguoi-dua-tin' => ['06:31:00', '07:16:00']
 ];
 
 try {
-    /** @var Htv7 $streamingProvider */
-    $streamingProvider        = StreamingProviderFactory::build(Htv7::class);
+    /** @var Thvl1 $streamingProvider */
+    $streamingProvider        = StreamingProviderFactory::build(Thvl1::class);
     $streamingProviderService = new StreamingProviderService($streamingProvider);
     $videoPath = $streamingProviderService->recordMoments($moments);
 
