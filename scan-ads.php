@@ -6,7 +6,8 @@ use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$video = 'video/' . date('ymd-a') . '.ts';
+$filename = '60s-' . date('a') == 'am' ? 'sang-06:30:00' : 'chieu-18:30:00' . '.ts';
+$video = 'video/' . $filename;
 if (!file_exists($video)) {
     die("No file is needed to be scanned at $video");
 }
