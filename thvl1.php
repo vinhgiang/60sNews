@@ -8,9 +8,9 @@ use App\Utils\Logger;
 require __DIR__ . '/App/Configs/configs.php';
 
 $moments = [
-    'chao-buoi-sang-test' => ['03:00:00', '06:30:00'],
     'chao-buoi-sang' => ['05:58:00', '06:30:00'],
-    'nguoi-dua-tin' => ['06:31:00', '07:16:00']
+    'nguoi-dua-tin' => ['06:31:00', '07:16:00'],
+    'nguoi-dua-tin-trua' => ['11:09:00', '11:50:00']
 ];
 
 try {
