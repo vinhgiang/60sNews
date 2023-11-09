@@ -2,6 +2,7 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
+use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
 use Exception;
 
 class Thvl1 extends StreamingProvider
@@ -13,7 +14,7 @@ class Thvl1 extends StreamingProvider
     {
         parent::__construct();
 
-        self::$ips = [$_ENV['THVL1_LIVE_DOMAIN']];
+        self::$ips = explode("\n", file_get_contents('data/thvl1-ip.txt'));;
     }
 
     public function getLastIdPath()
@@ -23,7 +24,29 @@ class Thvl1 extends StreamingProvider
 
     public function fetchServerIp()
     {
-        // does not need to fetch IP for this channel
+        $url = $_ENV['THVL1_SERVER_FETCHER_URL'];
+        $ips = [];
+        for ($i = 0; $i < 20; $i++) {
+            $providerUrl = file_get_contents($url);
+            if ($providerUrl === false) {
+                // if could not fetch data, wait for 1 second and then try again.
+                sleep(1);
+                continue;
+            }
+            preg_match('/http[s]?:\/\/.+\/.+\/\d+\//', $providerUrl, $matches);
+            if (! empty($matches[1])) {
+                $ips[$matches[1]] = '';
+                break;
+            }
+        }
+
+        if (empty($ips)) {
+            throw new EmptyIpListException("Could not get server Ip list at $url");
+        }
+
+        $this->saveIp($ips);
+
+        return count($ips);
     }
 
     /**
@@ -82,5 +105,10 @@ class Thvl1 extends StreamingProvider
         }
 
         return $formatStreamingPlaylist;
+    }
+
+    private function saveIp($ips)
+    {
+        file_put_contents('data/thvl1-ip.txt', join("\n", array_keys($ips)));
     }
 }

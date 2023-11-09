@@ -63,7 +63,7 @@ class StreamingProviderService
         $videoPath = '';
         foreach ($moments as $programName => [$start, $end]) {
             try {
-                $videoPath = $this->record($start, $end, $programName . '-' . str_replace(':', '-', $start), $path);
+                $videoPath = $this->record($start, $end, $programName . '-' . date('Y-m-d-') . str_replace(':', '-', $start), $path);
             } catch (EmptyIpListException $e) {
                 throw $e;
             } catch (Exception $ignored) {
