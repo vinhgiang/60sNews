@@ -5,7 +5,7 @@ use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$fileName = '60s-' . date('a') == 'am' ? 'sang-06-30-00' : 'chieu-18-30-00';
+$fileName = '60s-' . (date('a') == 'am' ? 'sang-06-30-00' : 'chieu-18-30-00'). date('-Y-m-d');
 $videoPath = 'video/' . $fileName . '-trimmed.mp4';
 if (! file_exists($videoPath)) {
     die('No file is needed to be uploaded.');

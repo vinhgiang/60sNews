@@ -66,7 +66,7 @@ class StreamingProviderService
         $videoPath = '';
         foreach ($moments as $programName => [$start, $end]) {
             try {
-                $videoPath = $this->record($start, $end, $programName . '-' . date('Y-m-d-') . str_replace(':', '-', $start), $path);
+                $videoPath = $this->record($start, $end, $programName . '-' . str_replace(':', '-', $start) . date('-Y-m-d'), $path);
             }
             catch (WrongMomentException $ignored) {
                 // ignore the exception since we will evaluate multiple moments
