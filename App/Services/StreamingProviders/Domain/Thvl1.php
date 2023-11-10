@@ -2,8 +2,10 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
+use App\Services\StreamingProviders\Exceptions\AccessException;
 use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
 use Exception;
+use http\Exception\UnexpectedValueException;
 
 class Thvl1 extends StreamingProvider
 {

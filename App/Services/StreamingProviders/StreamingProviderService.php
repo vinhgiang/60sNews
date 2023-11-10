@@ -3,8 +3,11 @@
 namespace App\Services\StreamingProviders;
 
 use App\Services\StreamingProviders\Domain\StreamingProvider;
+use App\Services\StreamingProviders\Exceptions\AccessException;
 use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
+use App\Services\StreamingProviders\Exceptions\WrongMomentException;
 use Exception;
+use UnexpectedValueException;
 
 class StreamingProviderService
 {
@@ -33,7 +36,7 @@ class StreamingProviderService
         $now        = date('H:i:s');
 
         if ($now < $from || $now > $to) {
-            throw new Exception("The job will be started from $from to $to. Now is $now.");
+            throw new WrongMomentException("The job will be started from $from to $to. Now is $now.");
         }
 
         $streamingList = $this->streamingProvider->getStreamingPlaylist();
@@ -64,11 +67,10 @@ class StreamingProviderService
         foreach ($moments as $programName => [$start, $end]) {
             try {
                 $videoPath = $this->record($start, $end, $programName . '-' . date('Y-m-d-') . str_replace(':', '-', $start), $path);
-            } catch (EmptyIpListException $e) {
-                throw $e;
-            } catch (Exception $ignored) {
+            }
+            catch (WrongMomentException $ignored) {
                 // ignore the exception since we will evaluate multiple moments
-                print_r($ignored->getMessage());
+                print_r($ignored->getMessage() . "</br>");
             }
 
             // stop the process as soon as we captured the correct moment
