@@ -117,7 +117,7 @@ class Thvl1 extends StreamingProvider
         $second = $matches[6];
 
         $latestTime = mktime($hour, $minute, $second, $month, $day, $year);
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $latestTime                   += 4;
             $id                           = date('YmdHis04000', $latestTime);
             $fileName                     = date('Y/m/d/H/i/s-04000', $latestTime) . '.ts';
