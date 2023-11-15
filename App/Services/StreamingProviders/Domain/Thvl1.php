@@ -58,7 +58,7 @@ class Thvl1 extends StreamingProvider
     public function getServerPath($ipIndex = 0)
     {
 
-        return 'http://' . self::$ips[$ipIndex] . '/thvli/thvl1-abr/tracks-v3a1/';
+        return 'http://' . self::$ips[$ipIndex] . '/thvli/thvl1-abr/tracks-v1a1/';
     }
 
     /**
@@ -104,6 +104,24 @@ class Thvl1 extends StreamingProvider
                 $id                           = str_replace('.ts', '', str_replace('-', '', str_replace('/', '', $streamingPlaylist[$i])));
                 $formatStreamingPlaylist[$id] = $this->getServerPath($ipIndex) . $streamingPlaylist[$i];
             }
+        }
+
+        // since this provider does not stream in a full minute, we need to add extra 12 seconds
+        $latestDate = (array_key_last($formatStreamingPlaylist) - 4000) / 100000;
+        preg_match('/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/', $latestDate, $matches);
+        $year   = $matches[1];
+        $month  = $matches[2];
+        $day    = $matches[3];
+        $hour   = $matches[4];
+        $minute = $matches[5];
+        $second = $matches[6];
+
+        $latestTime = mktime($hour, $minute, $second, $month, $day, $year);
+        for ($i = 0; $i < 4; $i++) {
+            $latestTime                   += 4;
+            $id                           = date('YmdHis04000', $latestTime);
+            $fileName                     = date('Y/m/d/H/i/s-04000', $latestTime) . '.ts';
+            $formatStreamingPlaylist[$id] = $this->getServerPath($ipIndex) . $fileName;
         }
 
         return $formatStreamingPlaylist;
