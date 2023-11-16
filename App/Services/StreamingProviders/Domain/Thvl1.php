@@ -2,10 +2,8 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
-use App\Services\StreamingProviders\Exceptions\AccessException;
 use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
 use Exception;
-use http\Exception\UnexpectedValueException;
 
 class Thvl1 extends StreamingProvider
 {
@@ -57,7 +55,6 @@ class Thvl1 extends StreamingProvider
      */
     public function getServerPath($ipIndex = 0)
     {
-
         return 'http://' . self::$ips[$ipIndex] . '/thvli/thvl1-abr/tracks-v1a1/';
     }
 
