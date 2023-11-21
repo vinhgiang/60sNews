@@ -31,7 +31,7 @@ class Htv7 extends StreamingProvider
     {
         $url = $_ENV['HTV7_SERVER_FETCHER_URL'];
         $ips = [];
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $providerUrl = file_get_contents($url);
             if ($providerUrl === false) {
                 // if could not fetch data, wait for 1 second and then try again.
@@ -41,6 +41,7 @@ class Htv7 extends StreamingProvider
             preg_match('/http[s]?:\/\/([\d*[.]*]*:\d*)/', $providerUrl, $matches);
             if (! empty($matches[1])) {
                 $ips[$matches[1]] = '';
+                break;
             }
         }
 
@@ -59,7 +60,6 @@ class Htv7 extends StreamingProvider
      */
     public function getServerPath($ipIndex = 0)
     {
-        // They will respond the same dataset even in different servers
         return 'http://' . self::$ips[$ipIndex] . '/sctv/s10/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
     }
 
