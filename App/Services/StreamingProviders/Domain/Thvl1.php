@@ -3,6 +3,7 @@
 namespace App\Services\StreamingProviders\Domain;
 
 use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
+use App\Utils\Logger;
 use Exception;
 
 class Thvl1 extends StreamingProvider
@@ -22,20 +23,44 @@ class Thvl1 extends StreamingProvider
         return 'data/thvl1-last-id.txt';
     }
 
+    /**
+     * @return int
+     * @throws EmptyIpListException
+     */
     public function fetchServerIp()
     {
-        $url = $_ENV['THVL1_SERVER_FETCHER_URL'];
-        $ips = [];
-        for ($i = 0; $i < 20; $i++) {
-            $providerUrl = file_get_contents($url);
-            if ($providerUrl === false) {
+        $url    = $_ENV['THVL1_SERVER_FETCHER_URL'] . '?timezone=' . $_ENV['TIMEZONE'];
+        for ($i = 0; $i < 3; $i++) {
+            $date   = Date('Ymd');
+            $time   = Date('His');
+            $token  = md5($date . $time);
+            $rand   = substr($token, 0, 3) . substr($token, -3);
+            $key    = md5('Kh0ngDuLieu' . $date . 'C0R0i' . $time . 'Kh0aAnT0an' . $rand);
+            $header = [
+                'X-Sfd-Date: ' . $date . $time,
+                'X-Sfd-Key: ' . $key
+            ];
+
+            $ips = '';
+
+            $cURLConnection = curl_init($url);
+            curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($cURLConnection, CURLOPT_HTTPHEADER, $header);
+
+            $apiResponse = json_decode(curl_exec($cURLConnection));
+            curl_close($cURLConnection);
+
+            $providerUrl = $apiResponse->link_play;
+
+            if (! isset($providerUrl)) {
                 // if could not fetch data, wait for 1 second and then try again.
                 sleep(1);
                 continue;
             }
-            preg_match('/http[s]?:\/\/.+\/.+\/\d+\//', $providerUrl, $matches);
+
+            preg_match('/http[s]?:\/\/(.+\/.+\/\d+)\//', $providerUrl, $matches);
             if (! empty($matches[1])) {
-                $ips[$matches[1]] = '';
+                $ips = $matches[1];
                 break;
             }
         }
@@ -46,7 +71,7 @@ class Thvl1 extends StreamingProvider
 
         $this->saveIp($ips);
 
-        return count($ips);
+        return 1;
     }
 
     /**
@@ -74,9 +99,18 @@ class Thvl1 extends StreamingProvider
     public function getStreamingPlaylist()
     {
         $url = $this->getStreamingPlaylistUrl();
-        $result = file_get_contents($url, false, $this->timeoutCtx);
-        if ($result === false) {
-            throw new Exception("Could not get data from $url");
+        $result       = '';
+        $isProcessing = true;
+        while ($isProcessing) {
+            $result = file_get_contents($url, false, $this->timeoutCtx);
+            if ($result === false) {
+                Logger::log("Could not get data from $url");
+                $this->fetchServerIp();
+                $url = $this->getStreamingPlaylistUrl();
+            }
+            else {
+                $isProcessing = false;
+            }
         }
 
         $streamingPlaylist = explode("\n", $result);
@@ -126,6 +160,8 @@ class Thvl1 extends StreamingProvider
 
     private function saveIp($ips)
     {
-        file_put_contents('data/thvl1-ip.txt', join("\n", array_keys($ips)));
+        self::$ips = [$ips];
+
+        file_put_contents('data/thvl1-ip.txt', $ips);
     }
 }

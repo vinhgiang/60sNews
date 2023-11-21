@@ -15,6 +15,7 @@
         "php": "^8.1",
         "vlucas/phpdotenv": "^5.5",
         "google/apiclient": "^2.0",
-        "sapientpro/image-comparator": "^1.0"
+        "sapientpro/image-comparator": "^1.0",
+        "ext-curl": "*"
     }
 }

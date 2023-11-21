@@ -2,6 +2,7 @@
 
 use Dotenv\Dotenv;
 
+date_default_timezone_set($_ENV['TIMEZONE']);
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 

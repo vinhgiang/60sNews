@@ -60,11 +60,16 @@ abstract class StreamingProvider
     {
         $fileName = $fileName == '' ? date('ymd-his') : $fileName;
         $streamingData = [];
+        $index = 0;
         foreach ($streamingPlaylist as $id => $stream) {
+            $index++;
             if ($id <= $startId) {
                 continue;
             }
             $streamingData[] = file_get_contents($stream);
+            if ($index > 10) {
+                sleep(2);
+            }
         }
 
         $finalPath = "$path/$fileName.ts";
