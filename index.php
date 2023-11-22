@@ -16,7 +16,7 @@ try {
     /** @var Htv7 $streamingProvider */
     $streamingProvider        = StreamingProviderFactory::build(Htv7::class);
     $streamingProviderService = new StreamingProviderService($streamingProvider);
-    $videoPath = $streamingProviderService->recordMoments($moments);
+    $videoPath = $streamingProviderService->recordMoments($moments, 'video', true);
 
     die($videoPath);
 

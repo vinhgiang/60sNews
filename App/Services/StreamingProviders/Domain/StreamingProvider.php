@@ -54,13 +54,20 @@ abstract class StreamingProvider
      * @param string $fileName
      * @param int $startId
      * @param bool $isOverride
+     * @param bool $isFragmented
      * @return string
      */
-    public function downloadStreamingList($streamingPlaylist, $path = 'video', $fileName = '', $startId = 0, $isOverride = true)
+    public function downloadStreamingList($streamingPlaylist, $path = 'video', $fileName = '', $startId = 0, $isOverride = true, $isFragmented = false)
     {
-        $fileName = $fileName == '' ? date('ymd-his') : $fileName;
+        $fileName      = $fileName == '' ? date('ymd-his') : $fileName;
+        $finalPath     = $isFragmented ? "$path/$fileName" : "$path/$fileName.ts";
         $streamingData = [];
-        $index = 0;
+        $index         = 0;
+
+        if ($isFragmented && ! file_exists($finalPath)) {
+            mkdir($finalPath, 0777, true);
+        }
+
         foreach ($streamingPlaylist as $id => $stream) {
             $index++;
             if ($id <= $startId) {
@@ -68,15 +75,21 @@ abstract class StreamingProvider
             }
             $data = file_get_contents($stream);
             if ($data !== false) {
-                $streamingData[] = $data;
+                if ($isFragmented) {
+                    file_put_contents("$finalPath/$id.ts", $data);
+                }
+                else {
+                    $streamingData[] = $data;
+                }
             }
             if ($index > 12) {
                 sleep(2);
             }
         }
 
-        $finalPath = "$path/$fileName.ts";
-        file_put_contents($finalPath, join('', $streamingData), $isOverride ? 0 : FILE_APPEND);
+        if (! $isFragmented) {
+            file_put_contents($finalPath, join('', $streamingData), $isOverride ? 0 : FILE_APPEND);
+        }
 
         return $finalPath;
     }

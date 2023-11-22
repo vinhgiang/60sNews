@@ -3,11 +3,8 @@
 namespace App\Services\StreamingProviders;
 
 use App\Services\StreamingProviders\Domain\StreamingProvider;
-use App\Services\StreamingProviders\Exceptions\AccessException;
-use App\Services\StreamingProviders\Exceptions\EmptyIpListException;
 use App\Services\StreamingProviders\Exceptions\WrongMomentException;
 use Exception;
-use UnexpectedValueException;
 
 class StreamingProviderService
 {
@@ -27,10 +24,11 @@ class StreamingProviderService
      * @param string $to
      * @param string $fileName
      * @param string $path
+     * @param bool $isFragmented
      * @return string
      * @throws Exception
      */
-    public function record($from, $to, $fileName = '', $path = 'video')
+    public function record($from, $to, $fileName = '', $path = 'video', $isFragmented = false)
     {
         $lastIdPath = $this->streamingProvider->getLastIdPath();
         $now        = date('H:i:s');
@@ -42,7 +40,7 @@ class StreamingProviderService
         $streamingList = $this->streamingProvider->getStreamingPlaylist();
 
         $lastId    = file_get_contents($lastIdPath);
-        $videoPath = $this->streamingProvider->downloadStreamingList($streamingList, $path, $fileName, $lastId, false);
+        $videoPath = $this->streamingProvider->downloadStreamingList($streamingList, $path, $fileName, $lastId, false, $isFragmented);
 
         $lastId = array_key_last($streamingList);
 
@@ -54,10 +52,11 @@ class StreamingProviderService
     /**
      * @param array[] $moments
      * @param string $path
+     * @param bool $isFragmented
      * @return string
      * @throws Exception
      */
-    public function recordMoments($moments, $path = 'video')
+    public function recordMoments($moments, $path = 'video', $isFragmented = false)
     {
         if (!is_array($moments)) {
             throw new Exception("Moments need to be an array. For example: [['06:00:00', '07:00:00'], ['13:30:00', '13:45:00']]");
@@ -66,7 +65,7 @@ class StreamingProviderService
         $videoPath = '';
         foreach ($moments as $programName => [$start, $end]) {
             try {
-                $videoPath = $this->record($start, $end, $programName . '-' . str_replace(':', '-', $start) . date('-Y-m-d'), $path);
+                $videoPath = $this->record($start, $end, $programName . '-' . str_replace(':', '-', $start) . date('-Y-m-d'), $path, $isFragmented);
             }
             catch (WrongMomentException $ignored) {
                 // ignore the exception since we will evaluate multiple moments
