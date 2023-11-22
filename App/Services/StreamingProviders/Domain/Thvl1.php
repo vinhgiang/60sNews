@@ -128,6 +128,7 @@ class Thvl1 extends StreamingProvider
      */
     private function formatStreamingPlaylist($streamingPlaylist, $ipIndex = 0)
     {
+        $duration = $this->getStreamingItemDuration($streamingPlaylist);
         $formatStreamingPlaylist = [];
         // the real streaming start at element #6
         for ($i = 6; $i < count($streamingPlaylist); $i++) {
@@ -137,7 +138,7 @@ class Thvl1 extends StreamingProvider
             }
         }
 
-        // since this provider does not stream in a full minute, we need to add extra 12 seconds
+        // since this provider does not stream in a full minute, we need to add extra seconds
         $latestDate = (array_key_last($formatStreamingPlaylist) - 4000) / 100000;
         preg_match('/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/', $latestDate, $matches);
         $year   = $matches[1];
@@ -148,7 +149,7 @@ class Thvl1 extends StreamingProvider
         $second = $matches[6];
 
         $latestTime = mktime($hour, $minute, $second, $month, $day, $year);
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i <= (60 / $duration - count($formatStreamingPlaylist)) + 1; $i++) {
             $latestTime                   += 4;
             $id                           = date('YmdHis04000', $latestTime);
             $fileName                     = date('Y/m/d/H/i/s-04000', $latestTime) . '.ts';

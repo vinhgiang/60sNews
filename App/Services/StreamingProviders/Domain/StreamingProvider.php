@@ -66,8 +66,11 @@ abstract class StreamingProvider
             if ($id <= $startId) {
                 continue;
             }
-            $streamingData[] = file_get_contents($stream);
-            if ($index > 10) {
+            $data = file_get_contents($stream);
+            if ($data !== false) {
+                $streamingData[] = $data;
+            }
+            if ($index > 12) {
                 sleep(2);
             }
         }
@@ -76,5 +79,36 @@ abstract class StreamingProvider
         file_put_contents($finalPath, join('', $streamingData), $isOverride ? 0 : FILE_APPEND);
 
         return $finalPath;
+    }
+
+    /**
+     * @param array $streamingPlaylist
+     * @return int
+     */
+    public function getStreamingItemDuration($streamingPlaylist)
+    {
+        $duration = 0;
+        for ($i = 0; $i < count($streamingPlaylist); $i++) {
+            if (str_contains($streamingPlaylist[$i], '#EXT-X-TARGETDURATION')) {
+                $duration = str_replace('#EXT-X-TARGETDURATION:', '', $streamingPlaylist[$i]);
+            }
+        }
+
+        return $duration;
+    }
+
+    /**
+     * @param array $streamingPlaylist
+     * @param int $duration
+     * @return array
+     */
+    public function trimStreamingList($streamingPlaylist, $duration)
+    {
+        if ($duration * count($streamingPlaylist) > 60) {
+            $offset = floor(60 / $duration) + 1;
+            $streamingPlaylist = array_slice($streamingPlaylist, 0, $offset, true);
+        }
+
+        return $streamingPlaylist;
     }
 }

@@ -60,7 +60,9 @@ class Htv7 extends StreamingProvider
      */
     public function getServerPath($ipIndex = 0)
     {
-        return 'http://' . self::$ips[$ipIndex] . '/sctv/s10/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
+        $ip = empty(self::$ips[$ipIndex]) ? $_ENV['HTV7_FALLBACK_IP'] : self::$ips[$ipIndex];
+
+        return 'http://' . $ip . '/sctv/s10/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
     }
 
     /**
@@ -110,17 +112,17 @@ class Htv7 extends StreamingProvider
      */
     private function formatStreamingPlaylist($streamingPlaylist, $ipIndex)
     {
+        $duration = $this->getStreamingItemDuration($streamingPlaylist);
         $formatStreamingPlaylist = [];
-        // the real streaming start at element #5
-        for ($i = 5; $i < count($streamingPlaylist); $i++) {
-            if ($i % 2 != 0) {
+        for ($i = 0; $i < count($streamingPlaylist); $i++) {
+            if (! str_contains($streamingPlaylist[$i], '#') && ! empty($streamingPlaylist[$i])) {
                 preg_match('/(\d+)[.]ts/', $streamingPlaylist[$i], $matches);
                 $id                        = $matches[1];
                 $formatStreamingPlaylist[$id] = $this->getServerPath($ipIndex) . "$id.ts";
             }
         }
 
-        return $formatStreamingPlaylist;
+        return $this->trimStreamingList($formatStreamingPlaylist, $duration);
     }
 
     /**
