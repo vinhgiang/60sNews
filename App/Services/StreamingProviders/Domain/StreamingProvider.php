@@ -59,8 +59,12 @@ abstract class StreamingProvider
      * @param bool $isFragmented
      * @return string
      */
-    public function downloadStreamingList($streamingPlaylist, $path = 'video', $fileName = '', $startId = 0, $isOverride = true, $isFragmented = false)
+    public function downloadStreamingList($streamingPlaylist, $path = 'video', $fileName = '', $startId = 0, $isOverride = true, $isFragmented = false, $trial = 0)
     {
+        if ($trial == 3) {
+            return '';
+        }
+
         $fileName      = $fileName == '' ? date('ymd-his') : $fileName;
         $finalPath     = $isFragmented ? "$path/$fileName" : "$path/$fileName.ts";
         $streamingData = [];
@@ -75,10 +79,11 @@ abstract class StreamingProvider
             if ($id <= $startId) {
                 continue;
             }
-            $data = file_get_contents($stream);
+            $data = file_get_contents($stream, false, $this->timeoutCtx);
 
             if ($data === false) {
                 Logger::log("Could not get data from $stream");
+                $retryList[$id] = $stream;
                 continue;
             }
 
@@ -92,6 +97,10 @@ abstract class StreamingProvider
             if ($index > 12) {
                 sleep(2);
             }
+        }
+
+        if (! empty($retryList)) {
+            $this->downloadStreamingList($retryList, $path, $fileName, 0, $isOverride, $isFragmented, $trial + 1);
         }
 
         if (! $isFragmented) {
