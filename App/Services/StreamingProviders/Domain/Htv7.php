@@ -15,7 +15,8 @@ class Htv7 extends StreamingProvider
     {
         parent::__construct();
 
-        self::$ips = explode("\n", file_get_contents('data/htv7-ip.txt'));
+        self::$ips   = explode("\n", file_get_contents('data/htv7-ip.txt'));
+        self::$ips[] = $_ENV['HTV7_FALLBACK_IP'];
     }
 
     public function getLastIdPath()
@@ -31,7 +32,7 @@ class Htv7 extends StreamingProvider
     {
         $url = $_ENV['HTV7_SERVER_FETCHER_URL'];
         $ips = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $providerUrl = file_get_contents($url);
             if ($providerUrl === false) {
                 // if could not fetch data, wait for 1 second and then try again.
@@ -41,7 +42,6 @@ class Htv7 extends StreamingProvider
             preg_match('/http[s]?:\/\/([\d*[.]*]*:\d*)/', $providerUrl, $matches);
             if (! empty($matches[1])) {
                 $ips[$matches[1]] = '';
-                break;
             }
         }
 
@@ -60,9 +60,7 @@ class Htv7 extends StreamingProvider
      */
     public function getServerPath($ipIndex = 0)
     {
-        $ip = empty(self::$ips[$ipIndex]) ? $_ENV['HTV7_FALLBACK_IP'] : self::$ips[$ipIndex];
-
-        return 'http://' . $ip . '/sctv/s10/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
+        return 'http://' . self::$ips[$ipIndex] . '/sctv/s10/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
     }
 
     /**
@@ -112,8 +110,9 @@ class Htv7 extends StreamingProvider
      */
     private function formatStreamingPlaylist($streamingPlaylist, $ipIndex)
     {
-        $duration = $this->getStreamingItemDuration($streamingPlaylist);
+        $duration                = $this->getStreamingItemDuration($streamingPlaylist);
         $formatStreamingPlaylist = [];
+
         for ($i = 0; $i < count($streamingPlaylist); $i++) {
             if (! str_contains($streamingPlaylist[$i], '#') && ! empty($streamingPlaylist[$i])) {
                 preg_match('/(\d+)[.]ts/', $streamingPlaylist[$i], $matches);

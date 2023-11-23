@@ -2,6 +2,8 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
+use App\Utils\Logger;
+
 abstract class StreamingProvider
 {
     /**
@@ -74,14 +76,19 @@ abstract class StreamingProvider
                 continue;
             }
             $data = file_get_contents($stream);
-            if ($data !== false) {
-                if ($isFragmented) {
-                    file_put_contents("$finalPath/$id.ts", $data);
-                }
-                else {
-                    $streamingData[] = $data;
-                }
+
+            if ($data === false) {
+                Logger::log("Could not get data from $stream");
+                continue;
             }
+
+            if ($isFragmented && ! file_exists("$finalPath/$id.ts")) {
+                file_put_contents("$finalPath/$id.ts", $data);
+            }
+            else {
+                $streamingData[] = $data;
+            }
+
             if ($index > 12) {
                 sleep(2);
             }
