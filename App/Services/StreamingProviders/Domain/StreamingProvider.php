@@ -95,7 +95,7 @@ abstract class StreamingProvider
             }
 
             if ($index > 12) {
-                sleep(2);
+                sleep(3);
             }
         }
 

@@ -80,7 +80,7 @@ class Thvl1 extends StreamingProvider
      */
     public function getServerPath($ipIndex = 0)
     {
-        return 'http://' . self::$ips[$ipIndex] . '/thvli/thvl1-abr/tracks-v1a1/';
+        return 'https://' . self::$ips[$ipIndex] . '/thvli/thvl1-abr/tracks-v1a1/';
     }
 
     /**
