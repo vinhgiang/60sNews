@@ -100,6 +100,7 @@ abstract class StreamingProvider
         }
 
         if (! empty($retryList) && $isFragmented) {
+            sleep(2);
             $this->downloadStreamingList($retryList, $path, $fileName, 0, $isOverride, $isFragmented, $trial + 1);
         }
 
