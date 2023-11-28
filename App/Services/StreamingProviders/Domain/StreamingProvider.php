@@ -112,7 +112,7 @@ abstract class StreamingProvider
         $index       = 0;
         $isLastTrial = $trial == 2;
 
-        if (file_exists($path)) {
+        if (! file_exists($path)) {
             mkdir($path, 0777, true);
         }
 
