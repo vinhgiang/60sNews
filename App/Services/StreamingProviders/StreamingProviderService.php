@@ -22,13 +22,11 @@ class StreamingProviderService
     /**
      * @param string $from
      * @param string $to
-     * @param string $fileName
      * @param string $path
-     * @param bool $isFragmented
      * @return string
      * @throws Exception
      */
-    public function record($from, $to, $fileName = '', $path = 'video', $isFragmented = false)
+    public function record($from, $to, $path = 'video')
     {
         $lastIdPath = $this->streamingProvider->getLastIdPath();
         $now        = date('H:i:s');
@@ -40,7 +38,7 @@ class StreamingProviderService
         $streamingList = $this->streamingProvider->getStreamingPlaylist();
 
         $lastId    = file_get_contents($lastIdPath);
-        $videoPath = $this->streamingProvider->downloadStreamingList($streamingList, $path, $fileName, $lastId, false, $isFragmented);
+        $videoPath = $this->streamingProvider->downloadStreamingFiles($streamingList, $path, $lastId);
 
         $lastId = array_key_last($streamingList);
 
@@ -52,11 +50,10 @@ class StreamingProviderService
     /**
      * @param array[] $moments
      * @param string $path
-     * @param bool $isFragmented
      * @return string
      * @throws Exception
      */
-    public function recordMoments($moments, $path = 'video', $isFragmented = false)
+    public function recordMoments($moments, $path = 'video')
     {
         if (!is_array($moments)) {
             throw new Exception("Moments need to be an array. For example: [['06:00:00', '07:00:00'], ['13:30:00', '13:45:00']]");
@@ -65,7 +62,7 @@ class StreamingProviderService
         $videoPath = '';
         foreach ($moments as $programName => [$start, $end]) {
             try {
-                $videoPath = $this->record($start, $end, $programName . '-' . str_replace(':', '-', $start) . date('-Y-m-d'), $path, $isFragmented);
+                $videoPath = $this->record($start, $end, $path . '/' . $programName . '-' . str_replace(':', '-', $start) . date('-Y-m-d'));
             }
             catch (WrongMomentException $ignored) {
                 // ignore the exception since we will evaluate multiple moments

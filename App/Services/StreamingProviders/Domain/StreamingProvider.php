@@ -11,14 +11,24 @@ abstract class StreamingProvider
      */
     protected $timeoutCtx;
 
-    public function __construct()
+    /**
+     * @var int
+     */
+    protected $minFileSize;
+
+    /**
+     * @param int $minFileSize
+     */
+    public function __construct($minFileSize = 900000)
     {
         $this->timeoutCtx = stream_context_create([
             'http' => [
-                'timeout' => 5,
-                // 5 Seconds
+                'timeout' => 7,
+                // 7 Seconds
             ]
         ]);
+
+        $this->minFileSize = $minFileSize;
     }
 
     public abstract function fetchServerIp();
@@ -51,27 +61,59 @@ abstract class StreamingProvider
     }
 
     /**
+     * @deprecated
+     *
      * @param string[] $streamingPlaylist
      * @param string $path
      * @param string $fileName
      * @param int $startId
      * @param bool $isOverride
-     * @param bool $isFragmented
      * @return string
      */
-    public function downloadStreamingList($streamingPlaylist, $path = 'video', $fileName = '', $startId = 0, $isOverride = true, $isFragmented = false, $trial = 0)
+    public function downloadStreamingList($streamingPlaylist, $path = 'video', $fileName = '', $startId = 0, $isOverride = true)
+    {
+        $fileName = $fileName == '' ? date('ymd-his') : $fileName;
+        $streamingData = [];
+        $index = 0;
+        foreach ($streamingPlaylist as $id => $stream) {
+            $index++;
+            if ($id <= $startId) {
+                continue;
+            }
+            $data = file_get_contents($stream);
+            if ($data !== false) {
+                $streamingData[] = $data;
+            }
+            if ($index > 12) {
+                sleep(2);
+            }
+        }
+
+        $finalPath = "$path/$fileName.ts";
+        file_put_contents($finalPath, join('', $streamingData), $isOverride ? 0 : FILE_APPEND);
+
+        return $finalPath;
+    }
+
+    /**
+     * @param string[] $streamingPlaylist
+     * @param string $path
+     * @param int $startId
+     * @param int $trial
+     * @return string
+     */
+    public function downloadStreamingFiles($streamingPlaylist, $path = 'video', $startId = 0, $trial = 0)
     {
         if ($trial == 3) {
             return '';
         }
 
-        $fileName      = $fileName == '' ? date('ymd-his') : $fileName;
-        $finalPath     = $isFragmented ? "$path/$fileName" : "$path/$fileName.ts";
-        $streamingData = [];
-        $index         = 0;
+        $path        = $path == 'video' ? 'video/' . date('ymd-his') : $path;
+        $index       = 0;
+        $isLastTrial = $trial == 2;
 
-        if ($isFragmented && ! file_exists($finalPath)) {
-            mkdir($finalPath, 0777, true);
+        if (file_exists($path)) {
+            mkdir($path, 0777, true);
         }
 
         foreach ($streamingPlaylist as $id => $stream) {
@@ -79,36 +121,29 @@ abstract class StreamingProvider
             if ($id <= $startId) {
                 continue;
             }
-            $data = file_get_contents($stream, false, $this->timeoutCtx);
 
-            if ($data === false) {
-                Logger::log("Could not get data from $stream");
-                $retryList[$id] = $stream;
-                continue;
+            $data    = file_get_contents($stream, false, $this->timeoutCtx);
+
+            if (! $this->isStreamingDataValid($data, $isLastTrial, $stream)) {
+                if (! $isLastTrial) {
+                    $retryList[$id] = $stream;
+                    continue;
+                }
             }
 
-            if ($isFragmented && ! file_exists("$finalPath/$id.ts")) {
-                file_put_contents("$finalPath/$id.ts", $data);
-            }
-            else {
-                $streamingData[] = $data;
-            }
+            file_put_contents("$path/$id.ts", $data);
 
             if ($index > 12) {
                 sleep(3);
             }
         }
 
-        if (! empty($retryList) && $isFragmented) {
-            sleep(2);
-            $this->downloadStreamingList($retryList, $path, $fileName, 0, $isOverride, $isFragmented, $trial + 1);
+        if (! empty($retryList)) {
+            sleep(1);
+            $this->downloadStreamingFiles($retryList, $path, $startId, $trial + 1);
         }
 
-        if (! $isFragmented) {
-            file_put_contents($finalPath, join('', $streamingData), $isOverride ? 0 : FILE_APPEND);
-        }
-
-        return $finalPath;
+        return $path;
     }
 
     /**
@@ -140,5 +175,31 @@ abstract class StreamingProvider
         }
 
         return $streamingPlaylist;
+    }
+
+    /**
+     * @param string $data
+     * @param bool $logEnabled
+     * @param string $streamName
+     * @return bool
+     */
+    private function isStreamingDataValid($data, $logEnabled = false, $streamName = 'link')
+    {
+        $dataLen = strlen($data);
+
+        if ($data === false) {
+            if ($logEnabled) {
+                Logger::log("Could not get data from $streamName");
+            }
+            return false;
+        }
+        else if ($dataLen < $this->minFileSize) {
+            if ($logEnabled) {
+                Logger::log("got $streamName for only: " . $dataLen / (1024 * 1024) . " Mb. End trial");
+            }
+            return false;
+        }
+
+        return true;
     }
 }
