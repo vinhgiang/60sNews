@@ -8,7 +8,7 @@ $startTime = time();
 $name      = $_GET['dir'] ?? $_GET['program'] . date('-Y-m-d');
 $dir       = "video/$name";
 
-$video = FfmpegService::concatVideoInDir($dir, false);
+$video = FfmpegService::concatVideoInDir($dir);
 
 $ffmpegService = new FfmpegService($video);
 $ffmpegService->extractAllFrames();
