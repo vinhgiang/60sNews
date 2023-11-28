@@ -29,6 +29,28 @@ class FfmpegService
         $this->workDir  = dirname($video);
     }
 
+    public static function concatVideoInDir($dir, $cleanupAfterConcat = true)
+    {
+        $finalFile   = $dir . '.mp4';
+        $fileListing = '';
+        $files       = scandir($dir);
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $fileListing .= "file '$file'\n";
+        }
+        file_put_contents($dir . '/playlist.txt', $fileListing);
+
+        exec("ffmpeg -f concat -safe 0 -i $dir/playlist.txt -c copy $finalFile");
+
+        if ($cleanupAfterConcat) {
+            FileSystem::rmdir_recursive($dir);
+        }
+
+        return $finalFile;
+    }
+
     /**
      * @return string[]
      */
