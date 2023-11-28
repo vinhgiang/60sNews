@@ -4,6 +4,7 @@ namespace App\Services\Ffmpeg;
 
 use App\Utils\FileSystem;
 use App\Utils\Logger;
+use Exception;
 
 class FfmpegService
 {
@@ -29,17 +30,33 @@ class FfmpegService
         $this->workDir  = dirname($video);
     }
 
+    /**
+     * @param string $dir
+     * @param bool $cleanupAfterConcat
+     * @return string
+     * @throws Exception
+     */
     public static function concatVideoInDir($dir, $cleanupAfterConcat = true)
     {
         $finalFile   = $dir . '.mp4';
         $fileListing = '';
         $files       = scandir($dir);
+
+        if (! is_dir($dir)) {
+            throw new Exception("$dir is not a directory");
+        }
+
         foreach ($files as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
             $fileListing .= "file '$file'\n";
         }
+
+        if ($fileListing === '') {
+            throw new Exception("$dir is empty");
+        }
+
         file_put_contents($dir . '/playlist.txt', $fileListing);
 
         exec("ffmpeg -f concat -safe 0 -i $dir/playlist.txt -c copy $finalFile");
