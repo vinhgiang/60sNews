@@ -33,7 +33,7 @@ try {
         $adsStartIndicatorsDir = 'resources/ads/start';
         $adsEndIndicatorsDir   = 'resources/ads/end';
         $adsDetectorService    = new DetectorService($adsStartIndicatorsDir, $adsEndIndicatorsDir);
-        $adsTimesDetected      = $adsDetectorService->scanBundle($totalFrames, $frameDir, $startAt, $isStart, $result, 95, 60 * $fps, $preDataFile);
+        $adsTimesDetected      = $adsDetectorService->scanBundle($totalFrames, $frameDir, $startAt, $isStart, $result, 95, 21 * $fps, $preDataFile);
 
         Logger::log("Ads: ");
         Logger::log($adsTimesDetected);

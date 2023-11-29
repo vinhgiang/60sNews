@@ -4,7 +4,8 @@ namespace App\Services\Ffmpeg;
 
 use App\Utils\FileSystem;
 use App\Utils\Logger;
-use Exception;
+use LengthException;
+use UnexpectedValueException;
 
 class FfmpegService
 {
@@ -34,7 +35,6 @@ class FfmpegService
      * @param string $dir
      * @param bool $cleanupAfterConcat
      * @return string
-     * @throws Exception
      */
     public static function concatVideoInDir($dir, $cleanupAfterConcat = true)
     {
@@ -43,7 +43,7 @@ class FfmpegService
         $files       = scandir($dir);
 
         if (! is_dir($dir)) {
-            throw new Exception("$dir is not a directory");
+            throw new UnexpectedValueException("$dir is not a directory");
         }
 
         foreach ($files as $file) {
@@ -54,7 +54,7 @@ class FfmpegService
         }
 
         if ($fileListing === '') {
-            throw new Exception("$dir is empty");
+            throw new LengthException("$dir is empty");
         }
 
         file_put_contents($dir . '/playlist.txt', $fileListing);
