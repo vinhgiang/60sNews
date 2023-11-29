@@ -6,8 +6,9 @@ use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$filename = '60s-' . (date('a') == 'am' ? 'sang-06-30-00' : 'chieu-18-30-00'). date('-Y-m-d') . '.ts';
-$video = 'video/' . $filename;
+$name  = $_GET['file'] ?? $_GET['program'] . date('-Y-m-d') . '.mp4';
+$video = "video/$name";
+
 if (!file_exists($video)) {
     die("No file is needed to be scanned at $video");
 }
