@@ -154,6 +154,7 @@ class Htv7 extends StreamingProvider
      */
     private function saveIp($ips)
     {
+        $ips       = array_keys($ips);
         self::$ips = $ips;
 
         file_put_contents('data/htv7-ip.txt', join("\n", $ips));
