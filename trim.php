@@ -5,7 +5,7 @@ use App\Services\Ffmpeg\FfmpegService;
 require __DIR__ . '/App/Configs/configs.php';
 
 $filename = '60s-' . (date('a') == 'am' ? 'sang-06-30-00' : 'chieu-18-30-00'). date('-Y-m-d');
-$video    = 'video/' . $filename . '.ts';
+$video    = 'video/' . $filename . '.mp4';
 if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4')) {
     die("No file is needed to be trimmed at $video");
 }
