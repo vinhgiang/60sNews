@@ -122,7 +122,7 @@ abstract class StreamingProvider
                 continue;
             }
 
-            $data    = file_get_contents($stream, false, $this->timeoutCtx);
+            $data = file_get_contents($stream, false, $this->timeoutCtx);
 
             if (! $this->isStreamingDataValid($data, $isLastTrial, $stream)) {
                 if (! $isLastTrial) {
