@@ -19,14 +19,16 @@ abstract class StreamingProvider
     /**
      * @param int $minFileSize
      */
-    public function __construct($minFileSize = 900000)
+    public function __construct($minFileSize = 900000, $streamingContextOpts = [])
     {
-        $this->timeoutCtx = stream_context_create([
+        $defaultContext = [
             'http' => [
                 'timeout' => 7,
                 // 7 Seconds
             ]
-        ]);
+        ];
+
+        $this->timeoutCtx = stream_context_create(array_merge_recursive($defaultContext, $streamingContextOpts));
 
         $this->minFileSize = $minFileSize;
     }
