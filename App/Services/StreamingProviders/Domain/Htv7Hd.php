@@ -15,7 +15,7 @@ class Htv7 extends StreamingProvider
     {
         parent::__construct();
 
-        self::$ips = explode("\n", file_get_contents('data/htv7-ip.txt'));
+        self::$ips   = explode("\n", file_get_contents('data/htv7-ip.txt'));
     }
 
     public function getLastIdPath()
@@ -47,8 +47,6 @@ class Htv7 extends StreamingProvider
         if (empty($ips)) {
             throw new EmptyIpListException("Could not get server Ip list at $url");
         }
-
-        $ips = array_flip($ips);
 
         $this->saveIp($ips);
 
