@@ -34,35 +34,43 @@ class DetectorService
      * @param int $totalFrames
      * @param string $frameDir
      * @param int $sensitive
-     * @param int $foundOffset  number of frame will be skipped after matching
+     * @param int $foundOffset number of frame will be skipped after matching
      * @return array
+     * @throws ImageResourceException
      */
     public function scan($totalFrames, $frameDir, $sensitive = 95, $foundOffset = 10)
     {
-        return $this->scanBundle($totalFrames, $frameDir, 1, true, [], $sensitive, $foundOffset);
+        return $this->scanBundle($totalFrames, $frameDir, 1, -1, true, [], $sensitive, $foundOffset);
     }
 
     /**
-     * @param $totalFrames
-     * @param $frameDir
-     * @param $startAt
-     * @param $isStart
-     * @param $previousResult
-     * @param $sensitive
-     * @param $foundOffset
-     * @param $logResulFilename
-     * @return array|mixed
+     * @param int $totalFrames
+     * @param string $frameDir
+     * @param int $startAt
+     * @param bool $isStart
+     * @param array $previousResult
+     * @param int $sensitive
+     * @param int $foundOffset
+     * @param int $endPairOffset
+     * @param string $logResulFilename
+     * @return array
      * @throws ImageResourceException
      */
-    public function scanBundle($totalFrames, $frameDir, $startAt = 1, $isStart = true, $previousResult = [], $sensitive = 95, $foundOffset = 10, $logResulFilename = '')
+    public function scanBundle($totalFrames, $frameDir, $startAt = 1, $endAt = -1, $isStart = true, $previousResult = [], $sensitive = 95, $foundOffset = 10, $endPairOffset = 0, $logResulFilename = '')
     {
         $times = $previousResult;
         $index = $isStart ? count($times) : count($times) - 1;
+        $endAt = $endAt < 0 ? PHP_INT_MAX : $endAt;
+
         for ($i = $startAt; $i <= $totalFrames; $i++) {
             $frame        = "$frameDir/$i.jpg";
             $similarities = [];
 
             if ($isStart) {
+                // if already found 1st pair, skip for $endPairOffset seconds
+                if ($index > 0 && $i < $times[$index - 1][1] + $endPairOffset) {
+                    $i = $times[$index - 1][1] + $endPairOffset;
+                }
                 foreach ($this->startIndicators as $indicator) {
                     $similarities[] = $this->imageComparator->compare($indicator, $frame);
                 }
@@ -83,7 +91,7 @@ class DetectorService
             }
 
             if (! empty($logResulFilename)) {
-                $isDone = $i == $totalFrames || count($times) == 2;
+                $isDone = $i == $totalFrames || $i >= $endAt;
                 if ($i % 100 == 0 || $isDone) {
                     $data = [
                         'processed' => $i,
@@ -92,6 +100,9 @@ class DetectorService
                         'isDone'    => $isDone
                     ];
                     file_put_contents("log/$logResulFilename", json_encode($data));
+                }
+                if ($isDone) {
+                    break;
                 }
             }
         }

@@ -48,6 +48,8 @@ try {
 
     //    $youtubeService->setVideoThumbnail('84ynjCwjPBE', 'thumb.jpg');
 
+    Logger::log("Uploaded!");
+
 } catch (Google_Service_Exception $e) {
     Logger::log("A service error occurred: \n{$e->getMessage()}");
 } catch (Google_Exception $e) {

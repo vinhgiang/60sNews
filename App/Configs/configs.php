@@ -15,5 +15,5 @@ $dotenv->load();
 date_default_timezone_set($_ENV['TIMEZONE']);
 
 if ($_ENV['ENV'] == 'local') {
-    set_time_limit(60);
+    set_time_limit(60 * 15);
 }
