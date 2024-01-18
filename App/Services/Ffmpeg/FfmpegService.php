@@ -61,7 +61,7 @@ class FfmpegService
 
         exec("ffmpeg -f concat -safe 0 -i $dir/playlist.txt -c copy $finalFile");
 
-        if ($cleanupAfterConcat) {
+        if ($cleanupAfterConcat && filesize($finalFile) >= 400000000) {
             FileSystem::rmdir_recursive($dir);
         }
 
