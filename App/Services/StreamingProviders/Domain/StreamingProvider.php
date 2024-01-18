@@ -130,6 +130,8 @@ abstract class StreamingProvider
                 if (! $isLastTrial) {
                     $retryList[$id] = $stream;
                     continue;
+                } else if (strlen($data) <= 0) {
+                    continue;
                 }
             }
 
