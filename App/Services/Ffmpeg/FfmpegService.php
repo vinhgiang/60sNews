@@ -161,8 +161,9 @@ class FfmpegService
             $index++;
         }
 
-        $concatCommand .= "concat=n=" . $numAds . ":v=1:a=1[outv][outa]";
+        $concatCommand .= "concat=n=" . $numAds . ":v=1:a=1[outv][outa];";
+        $overlayCommand = "[outv][1:v]overlay=814:49[outv_overlay]";
 
-        return "ffmpeg -i '{$this->video}' -filter_complex '$filterCommand $concatCommand' -map '[outv]' -map '[outa]' '{$this->workDir}/$newFilename.mp4'";
+        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' -filter_complex '$filterCommand $concatCommand $overlayCommand' -map '[outv_overlay]' -map '[outa]' '{$this->workDir}/$newFilename.mp4'";
     }
 }
