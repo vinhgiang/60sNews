@@ -148,6 +148,12 @@ class YoutubeService
         // 22 is People & Blogs. 25 is News & Politics
         $snippet->setCategoryId($categoryId);
 
+        // Set the default language for the video's metadata to Vietnamese
+        $snippet->setDefaultLanguage("vi");
+
+        // Set the default audio language of the video to Vietnamese
+        $snippet->setDefaultAudioLanguage("vi");
+
         return $snippet;
     }
 
