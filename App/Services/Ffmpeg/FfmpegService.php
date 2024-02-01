@@ -152,7 +152,7 @@ class FfmpegService
             $isLast     = $index == $numAds;
             $endFilter  = $isLast ? '' : ":end=$startFrame";
 
-            $filterCommand .= "[0:v]trim=start={$start}{$endFilter},setpts=PTS-STARTPTS,format=yuv420p[{$index}v];";
+            $filterCommand .= "[0:v]eq=brightness=0.05,trim=start={$start}{$endFilter},setpts=PTS-STARTPTS,format=yuv420p[{$index}v];";
             $filterCommand .= "[0:a]volume=5dB,atrim=start={$start}{$endFilter},asetpts=PTS-STARTPTS[{$index}a];";
 
             $concatCommand .= "[{$index}v][{$index}a]";
