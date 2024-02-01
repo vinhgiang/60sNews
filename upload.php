@@ -15,6 +15,7 @@ $oauthId      = $_ENV['GOOGLE_OAUTH_ID'];
 $oauthSecret  = $_ENV['GOOGLE_OAUTH_SECRET'];
 $redirectUrl  = $_ENV['GOOGLE_OAUTH_REDIRECT_URL'];
 $refreshToken = $_ENV['GOOGLE_OAUTH_REFRESH_TOKEN'];
+$dateOfYear   = date('z');
 $date         = date('d/m/Y');
 $dayPart      = date('a') == 'am' ? 'Sáng' : 'Chiều';
 
@@ -24,19 +25,17 @@ try {
     // Have to set Defer because we need to combine/create other requests before executing it at once
     $youtubeService->setDefer();
 
-    $title       = "60 Giây $dayPart Ngày $date - Mới Hơn - HTV Tin Tức Mới Nhất Hơn";
-    $description = "Tin Tức HTV $dayPart $date\n60 Giây $dayPart Mới Hơn Nhất - Ngày $date - HTV Tin Tức Mới Nhất Hơn\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác";
+    $title       = "60 Giây Ngày Hôm Nay - Tập $dateOfYear $dayPart - Ngày $date";
+    $description = "Tin Tức Thời Sự 60 Giây $dayPart ngày $date\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác";
     $tags        = [
         "#TinTucThoiSuVietnam",
-        "#HTVTinTuc",
-        "#HTVnews",
         "60Giay",
         "TinTuc60Giay",
-        "HTV7",
-        "HTV9",
         "TinTuc",
         "TinThoiSu",
-        "Tin Tuc TP Ho Chi Minh Moi Nhat"
+        "Tin Tuc TP Ho Chi Minh Moi Nhat",
+        "Tin Tuc Sai Gon",
+        "Thoi Su Ngay Hom Nay"
     ];
     $snippet     = $youtubeService->createVideoSnippet($title, $description, 25, $tags);
 
