@@ -25,8 +25,8 @@ try {
     // Have to set Defer because we need to combine/create other requests before executing it at once
     $youtubeService->setDefer();
 
-    $title       = "60 Giây Ngày Hôm Nay - Tập $dateOfYear $dayPart - Ngày $date";
-    $description = "Tin Tức Thời Sự 60 Giây $dayPart ngày $date\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác";
+    $title       = "60 Giây Ngày Hôm Nay - Tập $dateOfYear $dayPart - $date - KHÔNG QUẢNG CÁO";
+    $description = "Tin Tức Thời Sự 60 Giây $dayPart ngày $date\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác\n- Tin tức không quảng cáo";
     $tags        = [
         "#TinTucThoiSuVietnam",
         "60Giay",
@@ -35,7 +35,8 @@ try {
         "TinThoiSu",
         "Tin Tuc TP Ho Chi Minh Moi Nhat",
         "Tin Tuc Sai Gon",
-        "Thoi Su Ngay Hom Nay"
+        "Thoi Su Ngay Hom Nay",
+        "Khong Quang Cao",
     ];
     $snippet     = $youtubeService->createVideoSnippet($title, $description, 25, $tags);
 
