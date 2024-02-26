@@ -106,3 +106,7 @@ ffmpeg -i '{video_absolute_path}' -filter_complex '
 ### recreate timestamps without re-encoding
 
 ```ffmpeg -i {video_path} -fps_mode drop -c copy {out_put_path}```
+
+### Cut a video into multiple equal duration parts
+
+```ffmpeg -i input.mp4 -c copy -map 0 -segment_time {duration} -f segment -reset_timestamps 1 output%d.mp4```

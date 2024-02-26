@@ -162,8 +162,21 @@ class FfmpegService
         }
 
         $concatCommand .= "concat=n=" . $numAds . ":v=1:a=1[outv][outa];";
-        $overlayCommand = "[outv][1:v]overlay=814:49[outv_overlay]";
+        $overlayCommand = "[outv][1:v]overlay=814:49[outv_overlay];";
+        $blackScreenCommand = "color=black:s=1024x576:r=25:d=60[black];[outv_overlay][black]concat=n=2:v=1:a=0[outv_black];";
 
-        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' -filter_complex '$filterCommand $concatCommand $overlayCommand' -map '[outv_overlay]' -map '[outa]' '{$this->workDir}/$newFilename.mp4'";
+        $outroVideos = [];
+        while (count($outroVideos) < 10) {
+            $videoId = rand(0, 481);
+            $outroVideos[$videoId] = "'resources/outro/$videoId.mp4'";
+        }
+
+        Logger::log('[' . implode(', ', array_keys($outroVideos)). ']');
+
+        $outroVideoInputs = '-i ' . implode(' -i ', $outroVideos);
+
+        $outroCommand = "[outv_black][outa][2:v][2:a][3:v][3:a][4:v][4:a][5:v][5:a][6:v][6:a][7:v][7:a][8:v][8:a][9:v][9:a][10:v][10:a][11:v][11:a]concat=n=11:v=1:a=1[concat_v][concat_a];";
+
+        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' $outroVideoInputs -filter_complex '$filterCommand $concatCommand $blackScreenCommand $overlayCommand $outroCommand' -map '[concat_v]' -map '[concat_a]' '{$this->workDir}/$newFilename.mp4'";
     }
 }
