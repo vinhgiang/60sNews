@@ -175,7 +175,7 @@ class FfmpegService
 
         $outroVideoInputs = '-i ' . implode(' -i ', $outroVideos);
 
-        $outroCommand = "[outv_black][outa][2:v][2:a][3:v][3:a][4:v][4:a][5:v][5:a][6:v][6:a][7:v][7:a][8:v][8:a][9:v][9:a][10:v][10:a][11:v][11:a]concat=n=11:v=1:a=1[concat_v][concat_a];";
+        $outroCommand = "[outv_black][outa][2:v][2:a][3:v][3:a][4:v][4:a][5:v][5:a][6:v][6:a][7:v][7:a][8:v][8:a][9:v][9:a][10:v][10:a][11:v][11:a]concat=n=11:v=1:a=1[concat_v][concat_a]";
 
         return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' $outroVideoInputs -filter_complex '$filterCommand $concatCommand $blackScreenCommand $overlayCommand $outroCommand' -map '[concat_v]' -map '[concat_a]' '{$this->workDir}/$newFilename.mp4'";
     }
