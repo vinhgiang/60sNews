@@ -7,3 +7,5 @@ video/frames/*
 data/*
 log/*
 resources/outro/*
+
+!**/.gitkeep
