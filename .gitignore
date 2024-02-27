@@ -6,4 +6,4 @@ video/frames/*
 .env
 data/*
 log/*
-resources/outro
+resources/outro/*
