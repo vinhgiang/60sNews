@@ -1,12 +1,13 @@
 <?php
 
 use App\Services\Ffmpeg\FfmpegService;
+use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$filename = '60s-' . (date('a') == 'am' ? 'sang-06-30-00' : 'chieu-18-30-00'). date('-Y-m-d');
-$video    = 'video/' . $filename . '.mp4';
-if (! file_exists($video) || file_exists('video/' . $filename . '-trimmed.mp4')) {
+$name  = $_GET['file'] ?? $_GET['program'] . date('-Y-m-d') . '.mp4';
+$video = "video/$name";
+if (! file_exists($video) || file_exists('video/' . $name . '-trimmed.mp4')) {
     die("No file is needed to be trimmed at $video");
 }
 
@@ -49,8 +50,18 @@ else {
     $times[count($times) - 1][0] = $borderTimesDetected[0][1];
 }
 
-$ffmpegService->trimVideo($times);
+$trimmedVideo = $ffmpegService->trimVideo($times);
 
 $ffmpegService->cleanup();
+
+$outroVideos[0] = 'video/' . $trimmedVideo;
+while (count($outroVideos) < 10) {
+    $videoId = rand(1, 481);
+    $outroVideos[$videoId] = "resources/outro/$videoId.mp4";
+}
+
+Logger::log('[' . implode(', ', array_keys($outroVideos)). ']');
+
+$ffmpegService->concatVideos($outroVideos, 'video/final');
 
 die('took ' . time() - $startTime . ' seconds.');

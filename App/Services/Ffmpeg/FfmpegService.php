@@ -39,33 +39,41 @@ class FfmpegService
     public static function concatVideoInDir($dir, $cleanupAfterConcat = true)
     {
         $finalFile   = $dir . '.mp4';
-        $fileListing = '';
-        $files       = scandir($dir);
 
         if (! is_dir($dir)) {
             throw new UnexpectedValueException("$dir is not a directory");
         }
 
-        foreach ($files as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-            $fileListing .= "file '$file'\n";
-        }
+        $files = scandir($dir);
 
-        if ($fileListing === '') {
-            throw new LengthException("$dir is empty");
-        }
+        $fileListingPath = self::createFileList($files, $dir);
 
-        file_put_contents($dir . '/playlist.txt', $fileListing);
-
-        exec("ffmpeg -f concat -safe 0 -i $dir/playlist.txt -c copy $finalFile");
+        exec("ffmpeg -f concat -safe 0 -i $fileListingPath -c copy $finalFile");
 
         if ($cleanupAfterConcat && filesize($finalFile) >= 400000000) {
             FileSystem::rmdir_recursive($dir);
         }
 
         return $finalFile;
+    }
+
+    /**
+     * @param string[] $videos
+     * @param string $fileName
+     * @return string
+     */
+    public static function concatVideos($videos, $fileName)
+    {
+        $fileName        = "$fileName.mp4";
+        $fileListingPath = self::createFileList($videos);
+
+        $command = "ffmpeg -f concat -safe 0 -i $fileListingPath -vf 'setpts=PTS-STARTPTS' $fileName";
+
+        exec($command);
+
+        unlink($fileListingPath);
+
+        return $fileName;
     }
 
     /**
@@ -120,18 +128,34 @@ class FfmpegService
      * @param string[][] $times
      * @param string $newFilename
      * @param int $fps
-     * @return false|string
+     * @return string
      */
     public function trimVideo($times, $newFilename = '', $fps = 10)
     {
-        $newFilename   = empty($newFilename) ? "$this->fileName-trimmed" : $newFilename;
+        $newFilename   = empty($newFilename) ? "$this->fileName-trimmed.mp4" : "$newFilename.mp4";
         Logger::log($times);
 
         $cutterCommand = $this->trimVideoCommandBuilder($times, $newFilename, $fps);
 
         Logger::log($cutterCommand);
 
-        return exec($cutterCommand . ' 2>&1', $this->debug);
+        exec($cutterCommand . ' 2>&1', $this->debug);
+
+        return $newFilename;
+    }
+
+    /**
+     * @param int $duration
+     * @param bool $isAtStart
+     */
+    public function addBlackFrame($duration, $isAtStart = false)
+    {
+        $duration  = intval($duration);
+        $direction = $isAtStart ? "[black][0:v]" : "[0:v][black]";
+
+        $command = "ffmpeg -y -i '{$this->video}' -filter_complex 'color=black:s=1024x576:r=25:d={$duration}[black];{$direction}concat=n=2:v=1:a=0[outv_black]' -map '[outv_black]' -map 0:a '{$this->workDir}/$this->fileName-black.mp4'";
+
+        exec($command);
     }
 
     /**
@@ -165,18 +189,32 @@ class FfmpegService
         $overlayCommand = "[outv][1:v]overlay=814:49[outv_overlay];";
         $blackScreenCommand = "color=black:s=1024x576:r=25:d=60[black];[outv_overlay][black]concat=n=2:v=1:a=0[outv_black];";
 
-        $outroVideos = [];
-        while (count($outroVideos) < 10) {
-            $videoId = rand(0, 481);
-            $outroVideos[$videoId] = "'resources/outro/$videoId.mp4'";
+        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' -filter_complex '$filterCommand $concatCommand $overlayCommand $blackScreenCommand' -map '[outv_black]' -map '[outa]' '{$this->workDir}/$newFilename'";
+    }
+
+    /**
+     * @param string[] $files
+     * @param string $dir
+     * @return string
+     */
+    private static function createFileList($files, $dir = '')
+    {
+        if (empty($files)) {
+            throw new LengthException("No file need to concat.");
         }
 
-        Logger::log('[' . implode(', ', array_keys($outroVideos)). ']');
+        $fileListing = '';
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $fileListing .= "file '$file'\n";
+        }
 
-        $outroVideoInputs = '-i ' . implode(' -i ', $outroVideos);
+        $path = $dir == '' ? 'playlist.txt' : '$dir' . '/playlist.txt';
 
-        $outroCommand = "[outv_black][outa][2:v][2:a][3:v][3:a][4:v][4:a][5:v][5:a][6:v][6:a][7:v][7:a][8:v][8:a][9:v][9:a][10:v][10:a][11:v][11:a]concat=n=11:v=1:a=1[concat_v][concat_a]";
+        file_put_contents($path, $fileListing);
 
-        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' $outroVideoInputs -filter_complex '$filterCommand $concatCommand $blackScreenCommand $overlayCommand $outroCommand' -map '[concat_v]' -map '[concat_a]' '{$this->workDir}/$newFilename.mp4'";
+        return $path;
     }
 }
