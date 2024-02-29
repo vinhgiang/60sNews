@@ -7,7 +7,7 @@ require __DIR__ . '/App/Configs/configs.php';
 
 $name  = $_GET['file'] ?? $_GET['program'] . date('-Y-m-d') . '.mp4';
 $video = "video/$name";
-if (! file_exists($video) || file_exists('video/' . $name . '-trimmed.mp4')) {
+if (! file_exists($video)) {
     die("No file is needed to be trimmed at $video");
 }
 
@@ -62,6 +62,9 @@ while (count($outroVideos) < 10) {
 
 Logger::log('[' . implode(', ', array_keys($outroVideos)). ']');
 
-$ffmpegService->concatVideos($outroVideos, 'video/final');
+$fileInfo = pathinfo($video);
+['filename' => $filename, 'dirname' => $dir] = $fileInfo;
+
+$ffmpegService->concatVideos($outroVideos, "$dir/$filename-final");
 
 die('took ' . time() - $startTime . ' seconds.');
