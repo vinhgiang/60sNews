@@ -211,7 +211,7 @@ class FfmpegService
             $fileListing .= "file '$file'\n";
         }
 
-        $path = $dir == '' ? 'playlist.txt' : '$dir' . '/playlist.txt';
+        $path = $dir == '' ? 'playlist.txt' : "$dir/playlist.txt";
 
         file_put_contents($path, $fileListing);
 
