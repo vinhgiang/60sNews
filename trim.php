@@ -1,7 +1,6 @@
 <?php
 
 use App\Services\Ffmpeg\FfmpegService;
-use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
@@ -54,17 +53,17 @@ $trimmedVideo = $ffmpegService->trimVideo($times);
 
 $ffmpegService->cleanup();
 
-$outroVideos[0] = 'video/' . $trimmedVideo;
-while (count($outroVideos) < 10) {
-    $videoId = rand(1, 481);
-    $outroVideos[$videoId] = "resources/outro/$videoId.mp4";
-}
-
-Logger::log('[' . implode(', ', array_keys($outroVideos)). ']');
-
-$fileInfo = pathinfo($video);
-['filename' => $filename, 'dirname' => $dir] = $fileInfo;
-
-$ffmpegService->concatVideos($outroVideos, "$dir/$filename-final");
+//$outroVideos[0] = 'video/' . $trimmedVideo;
+//while (count($outroVideos) < 10) {
+//    $videoId = rand(1, 481);
+//    $outroVideos[$videoId] = "resources/outro/$videoId.mp4";
+//}
+//
+//Logger::log('[' . implode(', ', array_keys($outroVideos)). ']');
+//
+//$fileInfo = pathinfo($video);
+//['filename' => $filename, 'dirname' => $dir] = $fileInfo;
+//
+//$ffmpegService->concatVideos($outroVideos, "$dir/$filename-final");
 
 die('took ' . time() - $startTime . ' seconds.');

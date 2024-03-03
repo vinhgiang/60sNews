@@ -5,7 +5,7 @@ use App\Utils\Logger;
 
 require __DIR__ . '/App/Configs/configs.php';
 
-$name  = $_GET['file'] ?? $_GET['program'] . date('-Y-m-d') . '-final.mp4';
+$name  = $_GET['file'] ?? $_GET['program'] . date('-Y-m-d') . '-trimmed.mp4';
 $video = "video/$name";
 
 if (! file_exists($video)) {
@@ -37,7 +37,6 @@ try {
         "Tin Tuc TP Ho Chi Minh Moi Nhat",
         "Tin Tuc Sai Gon",
         "Thoi Su Ngay Hom Nay",
-        "Khong Quang Cao",
     ];
     $snippet     = $youtubeService->createVideoSnippet($title, $description, 25, $tags);
 
