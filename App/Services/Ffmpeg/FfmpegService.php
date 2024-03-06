@@ -187,12 +187,13 @@ class FfmpegService
 
         $concatCommand .= "concat=n=" . $numAds . ":v=1:a=1[outv][outa];";
         $overlayCommand = "[outv][1:v]overlay=814:49[outv_overlay];";
-        $blackScreenCommand = "color=black:s=1024x576:r=25:d=60[black];[outv_overlay][black]concat=n=2:v=1:a=0[outv_black]";
+//        $blackScreenCommand = "color=black:s=1024x576:r=25:d=60[black];[outv_overlay][black]concat=n=2:v=1:a=0[outv_black]";
 
-        $complexFilterCommands = "$filterCommand $concatCommand $overlayCommand $blackScreenCommand";
+//        $complexFilterCommands = "$filterCommand $concatCommand $overlayCommand $blackScreenCommand";
+        $complexFilterCommands = "$filterCommand $concatCommand $overlayCommand";
         $complexFilterCommands = preg_replace('/][^]]*$/', ']', $complexFilterCommands);
 
-        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' -filter_complex '$complexFilterCommands' -map '[outv_black]' -map '[outa]' '{$this->workDir}/$newFilename'";
+        return "ffmpeg -i '{$this->video}' -i 'resources/logo/60sec-logo-small.png' -filter_complex '$complexFilterCommands' -map '[outv_overlay]' -map '[outa]' '{$this->workDir}/$newFilename'";
     }
 
     /**
