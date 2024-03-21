@@ -26,8 +26,8 @@ try {
     // Have to set Defer because we need to combine/create other requests before executing it at once
     $youtubeService->setDefer();
 
-    $title       = "60 Giây Ngày Hôm Nay - Tập $dateOfYear $dayPart - $date";
-    $description = "Tin Tức Thời Sự 60 Giây $dayPart ngày $date\nKênh Tin Tức Thời Sự 60 Giây Là Kênh Tổng Hợp Tin Tức - Sự Kiện - Giải trí Nhanh Nhất So Với Các Kênh Khác\n";
+    $title       = "Bản tin thời sự 60S $dayPart Ngày - $date";
+    $description = "Chương trình thời sự 60 Giây ngày Tp.HCM hôm nay $date bao gồm các nội dung chính sau:\n";
     $tags        = [
         "#TinTucThoiSuVietnam",
         "60Giay",
@@ -48,7 +48,10 @@ try {
 
     //    $youtubeService->setVideoThumbnail('84ynjCwjPBE', 'thumb.jpg');
 
-    Logger::log("Uploaded!");
+    $msg = "Uploaded!";
+    Logger::log($msg);
+
+    die($msg);
 
 } catch (Google_Service_Exception $e) {
     Logger::log("A service error occurred: \n{$e->getMessage()}");
