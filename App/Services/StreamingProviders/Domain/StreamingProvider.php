@@ -59,7 +59,7 @@ abstract class StreamingProvider
      */
     public function isStreamingPlaylistValid($streamingPlaylist)
     {
-        return is_array($streamingPlaylist) && $streamingPlaylist[0] == '#EXTM3U';
+        return is_array($streamingPlaylist) && trim($streamingPlaylist[0]) == '#EXTM3U';
     }
 
     /**

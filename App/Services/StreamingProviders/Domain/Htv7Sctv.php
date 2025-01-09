@@ -43,7 +43,7 @@ class Htv7Sctv extends StreamingProvider
      */
     public function getServerPath($ipIndex = 0)
     {
-        return 'http://' . self::$ips[$ipIndex] . '/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s10.edge.cdn.sctvonline.vn/hls/htv7/';
+        return 'https://' . self::$ips[$ipIndex] . '/cdn-cgi/edge/v2/e2.endpoint.cdn.sctvonline.vn/nginx.s4.edge.cdn.sctvonline.vn/hls/htv7/';
     }
 
     /**
@@ -52,7 +52,7 @@ class Htv7Sctv extends StreamingProvider
      */
     public function getStreamingPlaylistUrl($ipIndex = 0)
     {
-        return $this->getServerPath($ipIndex) . "index.m3u8";
+        return $this->getServerPath($ipIndex) . "02.m3u8";
     }
 
     /**
@@ -95,7 +95,7 @@ class Htv7Sctv extends StreamingProvider
             if (! str_contains($streamingPlaylist[$i], '#') && ! empty($streamingPlaylist[$i])) {
                 preg_match('/(\d+)[.]ts/', $streamingPlaylist[$i], $matches);
 
-                $fileName = $matches[0];
+                $fileName = $streamingPlaylist[$i];
                 $id       = $matches[1];
 
                 $formatStreamingPlaylist[$id] = $this->getServerPath() . $fileName;
