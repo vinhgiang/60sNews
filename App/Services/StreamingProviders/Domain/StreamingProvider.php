@@ -2,7 +2,9 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
+use App\Utils\FileSystem;
 use App\Utils\Logger;
+use Google\Exception;
 
 abstract class StreamingProvider
 {
@@ -17,19 +19,16 @@ abstract class StreamingProvider
     protected $minFileSize;
 
     /**
+     * @var string[]
+     */
+    protected $headers;
+
+    /**
      * @param int $minFileSize
      */
-    public function __construct($minFileSize = 900000, $streamingContextOpts = [])
+    public function __construct($headers = [], $minFileSize = 900000)
     {
-        $defaultContext = [
-            'http' => [
-                'timeout' => 7,
-                // 7 Seconds
-            ]
-        ];
-
-        $this->timeoutCtx = stream_context_create(array_merge_recursive($defaultContext, $streamingContextOpts));
-
+        $this->headers     = $headers;
         $this->minFileSize = $minFileSize;
     }
 
@@ -124,7 +123,7 @@ abstract class StreamingProvider
                 continue;
             }
 
-            $data = file_get_contents($stream, false, $this->timeoutCtx);
+            $data = FileSystem::downloadFileViaCurl($stream, $this->headers);
 
             if (! $this->isStreamingDataValid($data, $isLastTrial, $stream)) {
                 if (! $isLastTrial) {
@@ -141,6 +140,7 @@ abstract class StreamingProvider
                 sleep(3);
             }
         }
+
 
         if (! empty($retryList)) {
             sleep(1);

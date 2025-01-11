@@ -2,6 +2,7 @@
 
 namespace App\Services\StreamingProviders\Domain;
 
+use App\Utils\FileSystem;
 use App\Utils\Logger;
 use Exception;
 
@@ -12,13 +13,11 @@ class Htv7Sctv extends StreamingProvider
 
     public function __construct()
     {
-        $contextOps = [
-            "http" => [
-                "method" => "GET",
-                "header" => "referer: https://sctvonline.vn/"
-            ]
+        $header = [
+            'referer: https://sctvonline.vn/'
         ];
-        parent::__construct(900000, $contextOps);
+
+        parent::__construct($header);
 
         self::$ips = [$_ENV['HTV7_SCTV_STREAMING_URL']];
     }
@@ -66,7 +65,7 @@ class Htv7Sctv extends StreamingProvider
         $result       = '';
         $isProcessing = true;
         while ($isProcessing) {
-            $result = file_get_contents($url, false, $this->timeoutCtx);
+            $result = FileSystem::downloadFileViaCurl($url, $this->headers);
             if ($result === false) {
                 Logger::log("Could not get data from $url");
             } else {
@@ -95,7 +94,7 @@ class Htv7Sctv extends StreamingProvider
             if (! str_contains($streamingPlaylist[$i], '#') && ! empty($streamingPlaylist[$i])) {
                 preg_match('/(\d+)[.]ts/', $streamingPlaylist[$i], $matches);
 
-                $fileName = $streamingPlaylist[$i];
+                $fileName = trim($streamingPlaylist[$i]);
                 $id       = $matches[1];
 
                 $formatStreamingPlaylist[$id] = $this->getServerPath() . $fileName;
